@@ -1,0 +1,87 @@
+name: Validate PR
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: validate-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Scratch Org Validation
+    runs-on: ubuntu-latest
+    env:
+      SCRATCH_ALIAS: ci-scratch-${{ github.run_id }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli --silent
+
+      - name: Install npm dependencies
+        run: npm ci --silent
+
+      - name: Authenticate Dev Hub
+        run: |
+          echo "${{ secrets.DEVHUB_AUTH_URL }}" > devhub-auth.json
+          sf org login sfdx-url --sfdx-url-file devhub-auth.json --alias devhub --set-default-dev-hub
+          rm devhub-auth.json
+
+      - name: Create scratch org
+        run: |
+          sf org create scratch \
+            --definition-file config/scratch-orgs/ci.json \
+            --alias $SCRATCH_ALIAS \
+            --duration-days 1 \
+            --target-dev-hub devhub
+
+      - name: Push source
+        run: sf project deploy start --target-org $SCRATCH_ALIAS
+
+      - name: Install TestDataFactory package
+        run: |
+          sf package install \
+            --package 04t1n000002WsK5AAK \
+            --target-org $SCRATCH_ALIAS \
+            --no-prompt \
+            --wait 10
+
+      - name: Run Apex tests
+        run: |
+          sf apex run test \
+            --target-org $SCRATCH_ALIAS \
+            --test-level RunLocalTests \
+            --result-format json \
+            --output-dir test-results \
+            --wait 20
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apex-test-results
+          path: test-results/
+
+      - name: Run Code Analyzer (PMD)
+        run: |
+          sf plugins install @salesforce/sfdx-scanner
+          sf scanner run \
+            --target force-app/ \
+            --format table \
+            --severity-threshold 2
+
+      - name: Delete scratch org
+        if: always()
+        run: sf org delete scratch --target-org $SCRATCH_ALIAS --no-prompt 2>/dev/null || true

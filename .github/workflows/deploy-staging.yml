@@ -1,0 +1,41 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    name: Deploy → Staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli --silent
+
+      - name: Authenticate staging org
+        run: |
+          echo "${{ secrets.STAGING_AUTH_URL }}" > staging-auth.json
+          sf org login sfdx-url --sfdx-url-file staging-auth.json --alias staging
+          rm staging-auth.json
+
+      - name: Deploy source
+        run: sf project deploy start --target-org staging
+
+      - name: Run smoke tests
+        run: |
+          sf apex run test \
+            --target-org staging \
+            --test-level RunLocalTests \
+            --result-format human \
+            --wait 15
