@@ -40,11 +40,11 @@ header "1/6  Personalising template files"
 replace_token() {
   local token="$1"
   local value="$2"
-  # macOS-compatible sed (-i '' for in-place without backup)
+  # Exclude setup.sh itself to prevent self-modification
   find . \
-    \( -name ".git" -o -name "node_modules" -o -name "libs" -o -name "graphify-out" \) -prune \
+    \( -name ".git" -o -name "node_modules" -o -name "libs" -o -name "graphify-out" -o -name ".agents" \) -prune \
     -o \( -name "*.json" -o -name "*.yaml" -o -name "*.yml" \
-         -o -name "*.md" -o -name "*.sh" -o -name "*.cls" \
+         -o -name "*.md" -o -name "*.cls" \
          -o -name "*.trigger" -o -name "*.html" -o -name "*.js" \) \
     -print | xargs sed -i '' "s|${token}|${value}|g" 2>/dev/null || true
 }
@@ -81,7 +81,7 @@ header "4/6  Installing Salesforce sf-skills"
 
 if command -v npx &>/dev/null; then
   info "Running: npx skills add forcedotcom/sf-skills"
-  npx skills add forcedotcom/sf-skills
+  npx skills add forcedotcom/sf-skills || true
   success "sf-skills installed (generating-apex, generating-lwc-components, running-apex-tests, deploying-metadata, ...)"
 else
   warn "npx not found — install Node.js then run: npx skills add forcedotcom/sf-skills"

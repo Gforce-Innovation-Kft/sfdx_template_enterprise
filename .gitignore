@@ -53,6 +53,9 @@ graphify-out/.graphify_analysis.json
 graphify-out/.graphify_labels.json
 graphify-out/cache/
 
+# sf-skills — reinstalled by setup.sh via npx skills add
+.agents/
+
 # Local scratch / planning dirs
 SalesforceProject setup/
 

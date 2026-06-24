@@ -1,0 +1,7 @@
+# sf-skills are installed by setup.sh via `npx skills add forcedotcom/sf-skills`
+# Do not commit them — they are regenerated on setup
+*
+# Keep GForce custom skills
+!graphify/
+!new-requirement/
+!.gitignore
