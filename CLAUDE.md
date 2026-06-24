@@ -17,11 +17,12 @@ All layers use fflib enterprise patterns. NebulaLogger for all logging. Never `S
 2. Read the relevant `docs/product/requirements/REQ-*.yaml`
 3. For Apex: use the `generating-apex` sf-skill + read `.claude/references/apex-coding-rules.md`
 4. For LWC: use the `generating-lwc-components` sf-skill + read `.claude/references/lwc-coding-rules.md`
-5. For tests: use the `generating-apex-test` sf-skill + read `.claude/references/apex-patterns.md`
+5. For tests: use the `generating-apex-test` sf-skill + read `.claude/references/apex-patterns.md` + read `.claude/references/testing-testdatafactory.md`
 
 ## Code navigation (graphify)
 
 When `graphify-out/graph.json` exists:
+
 - `graphify query "<question>"` — broad context lookup (replaces grep)
 - `graphify path "ClassA" "ClassB"` — relationship trace
 - `graphify explain "ClassName"` — node detail
@@ -40,14 +41,15 @@ Create a GRS `REQ-NNN.yaml` from a business description.
 
 Read the relevant file before generating code — do NOT skip this step:
 
-| File | When to read |
-|------|-------------|
-| `apex-coding-rules.md` | Any Apex generation — bulk safety, NebulaLogger, fflib, security |
-| `lwc-coding-rules.md` | Any LWC generation — wire, 4-state template, SLDS, FLS |
-| `apex-patterns.md` | fflib Application factory, domain/selector/service/UoW patterns |
-| `security-sharing.md` | CRUD/FLS, WITH SECURITY_ENFORCED, Named Credentials |
-| `soql-optimization.md` | Selector SOQL, bind vars, index fields |
-| `deployment-devops.md` | Branching, scratch orgs, CI gates, promotion |
+| File                         | When to read                                                         |
+| ---------------------------- | -------------------------------------------------------------------- |
+| `apex-coding-rules.md`       | Any Apex generation — bulk safety, NebulaLogger, fflib, security     |
+| `lwc-coding-rules.md`        | Any LWC generation — wire, 4-state template, SLDS, FLS               |
+| `apex-patterns.md`           | fflib Application factory, domain/selector/service/UoW patterns      |
+| `testing-testdatafactory.md` | TestDataFactory API, project factory wrappers, standard test pattern |
+| `security-sharing.md`        | CRUD/FLS, WITH SECURITY_ENFORCED, Named Credentials                  |
+| `soql-optimization.md`       | Selector SOQL, bind vars, index fields                               |
+| `deployment-devops.md`       | Branching, scratch orgs, CI gates, promotion                         |
 
 ## Hard constraints
 
@@ -65,6 +67,7 @@ Read the relevant file before generating code — do NOT skip this step:
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
 
 Rules:
+
 - For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.

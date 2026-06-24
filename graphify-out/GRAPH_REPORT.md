@@ -2,18 +2,18 @@
 
 ## Corpus Check
 
-- 278 files · ~223,645 words
+- 280 files · ~231,652 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
 
-- 3954 nodes · 5709 edges · 287 communities (212 shown, 75 thin omitted)
-- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 419 edges (avg confidence: 0.61)
+- 4144 nodes · 5908 edges · 294 communities (215 shown, 79 thin omitted)
+- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 440 edges (avg confidence: 0.6)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
 
-- Built from commit: `5a747c08`
+- Built from commit: `0110e1e1`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -290,22 +290,31 @@
 - [[_COMMUNITY_Community 268|Community 268]]
 - [[_COMMUNITY_Community 269|Community 269]]
 - [[_COMMUNITY_Community 270|Community 270]]
+- [[_COMMUNITY_Community 287|Community 287]]
+- [[_COMMUNITY_Community 288|Community 288]]
+- [[_COMMUNITY_Community 289|Community 289]]
+- [[_COMMUNITY_Community 290|Community 290]]
+- [[_COMMUNITY_Community 291|Community 291]]
+- [[_COMMUNITY_Community 292|Community 292]]
+- [[_COMMUNITY_Community 293|Community 293]]
 
 ## God Nodes (most connected - your core abstractions)
 
-1. `SfCliError` - 47 edges
-2. `AuthRequired` - 45 edges
-3. `Path` - 41 edges
-4. `RestClientError` - 40 edges
-5. `DCQueryError` - 33 edges
-6. `_run_pipeline()` - 30 edges
-7. `write_to_disk()` - 29 edges
-8. `_RenderHarness` - 26 edges
-9. `make_rows()` - 24 edges
-10. `FlowScreenComponent` - 22 edges
+1. `TestDataFactory_Test` - 86 edges
+2. `SfCliError` - 47 edges
+3. `AuthRequired` - 45 edges
+4. `Path` - 41 edges
+5. `RestClientError` - 40 edges
+6. `DCQueryError` - 33 edges
+7. `DefaultValueProvider` - 32 edges
+8. `_run_pipeline()` - 30 edges
+9. `write_to_disk()` - 29 edges
+10. `_RenderHarness` - 26 edges
 
 ## Surprising Connections (you probably didn't know these)
 
+- `Element` --uses--> `AuthRequired` [INFERRED]
+  .agents/skills/investigating-agentforce-architecture/scripts/metadata_listing.py → .agents/skills/investigating-agentforce-architecture/scripts/sf_cli.py
 - `TimeRange` --uses--> `DCQueryError` [INFERRED]
   .agents/skills/investigating-agentforce-d360/scripts/tests/test_discover_sessions.py → .agents/skills/investigating-agentforce-d360/scripts/dc.py
 - `validate_lwc_file()` --calls--> `SLDSValidator` [INFERRED]
@@ -314,8 +323,6 @@
   .agents/skills/investigating-agentforce-architecture/scripts/main.py → .agents/skills/investigating-agentforce-architecture/scripts/config.py
 - `_run_pipeline()` --calls--> `build_agent_cache_dir()` [INFERRED]
   .agents/skills/investigating-agentforce-architecture/scripts/main.py → .agents/skills/investigating-agentforce-architecture/scripts/config.py
-- `fetch_planner_definition()` --calls--> `load_soql()` [INFERRED]
-  .agents/skills/investigating-agentforce-architecture/scripts/fetch_soql.py → .agents/skills/investigating-agentforce-architecture/scripts/soql_loader.py
 
 ## Import Cycles
 
@@ -323,7 +330,7 @@
 - 1-file cycle: `.agents/skills/investigating-agentforce-d360/scripts/discover_sessions.py -> .agents/skills/investigating-agentforce-d360/scripts/discover_sessions.py`
 - 1-file cycle: `.agents/skills/investigating-agentforce-d360/scripts/render_dc.py -> .agents/skills/investigating-agentforce-d360/scripts/render_dc.py`
 
-## Communities (287 total, 75 thin omitted)
+## Communities (294 total, 79 thin omitted)
 
 ### Community 0 - "Community 0"
 
@@ -342,8 +349,8 @@ Nodes (26): Path, \_classic_react_tree(), \_nga_tree(), Tests for render_archite
 
 ### Community 4 - "Community 4"
 
-Cohesion: 0.07
-Nodes (51): Namespace, Path, \_apply_path_overrides(), \_build_creds_plumbing(), \_build_flow_children(), \_cache_is_fresh(), \_collect_flow_nested_prompt_template_names(), \_collect_prompt_template_names() (+43 more)
+Cohesion: 0.06
+Nodes (57): Namespace, Path, \_apply_path_overrides(), \_build_creds_plumbing(), \_build_flow_children(), \_cache_is_fresh(), \_collect_flow_nested_prompt_template_names(), \_collect_prompt_template_names() (+49 more)
 
 ### Community 5 - "Community 5"
 
@@ -383,12 +390,12 @@ Nodes (11): ComposeAgentCellTests, DecodeTruncateTests, DeriveSessionEndTests, F
 ### Community 12 - "Community 12"
 
 Cohesion: 0.11
-Nodes (40): CredsProvider, fetch_apex_bodies_by_ids(), fetch_apex_bodies_by_names(), fetch_bot_definition_details(), fetch_bot_versions(), fetch_flow_definition_by_ids(), fetch_flow_definition_ids_by_names(), fetch_flow_definition_view_by_durable_ids() (+32 more)
+Nodes (42): CredsProvider, fetch_apex_bodies_by_ids(), fetch_apex_bodies_by_names(), fetch_bot_definition_details(), fetch_bot_versions(), fetch_flow_definition_by_ids(), fetch_flow_definition_ids_by_names(), fetch_flow_definition_view_by_durable_ids() (+34 more)
 
 ### Community 13 - "Community 13"
 
-Cohesion: 0.14
-Nodes (26): \_apply_all(), \_args(), BotNotFoundTests, CacheBehaviourTests, ClassicHappyPathTests, \_mock_auth_probe(), \_mock_bot_resolution(), \_mock_wave_a_classic() (+18 more)
+Cohesion: 0.17
+Nodes (21): \_apply_all(), \_args(), CacheBehaviourTests, ClassicHappyPathTests, \_mock_auth_probe(), \_mock_bot_resolution(), \_mock_wave_a_classic(), \_mock_wave_a_nga() (+13 more)
 
 ### Community 14 - "Community 14"
 
@@ -397,8 +404,8 @@ Nodes (18): CompletedProcess, CacheCheckSchemaVersionTests, \_parse_kv(), cache_
 
 ### Community 15 - "Community 15"
 
-Cohesion: 0.08
-Nodes (19): Path, the skill contract says every exit path emits a RESULT block. Before the fix, the redacted error_detail must not leak tokens even if the exception mes, argparse's --help path raises SystemExit. That MUST propagate unchanged, `_swap_dir_atomic` preserves sibling content in `target`. The prior whole-di, Same filename in both target and staging → staging content wins., If the old target entry is a directory and the new staging entry is a fi, Pre-existing precondition: staging must exist, or we raise. (+11 more)
+Cohesion: 0.10
+Nodes (15): Path, `_swap_dir_atomic` preserves sibling content in `target`. The prior whole-di, Same filename in both target and staging → staging content wins., If the old target entry is a directory and the new staging entry is a fi, Pre-existing precondition: staging must exist, or we raise., End-to-end via `_run_finalize`: after a first successful run seeds a co-, Gap C (2026-05-05): unit tests for `metadata_listing.retrieve_prompt_templat, Build a mock `\_run_retrieve` side_effect that writes an unpackaged.zip i (+7 more)
 
 ### Community 16 - "Community 16"
 
@@ -412,8 +419,8 @@ Nodes (19): Any, Run all validations and return results. Returns: dict with, Get
 
 ### Community 18 - "Community 18"
 
-Cohesion: 0.07
-Nodes (15): Path, Compute the canonical session dir under a tmp DATA_ROOT., Materialize the synthetic session under ``<data_root>/<org>/<agent>\_\_<ver>/<sid>, session_dir_for(), write_to_disk(), ResolveFromDiskTests, \_add_extra_turn_to_tree(), DecodedLineTests (+7 more)
+Cohesion: 0.10
+Nodes (8): \_add_extra_turn_to_tree(), DecodedLineTests, MainTests, MultiTurnRenderTests, ParseFinishReasonTests, Additional `render_dc` tests targeting branches not covered by ``test_render_d, Mutate the assembled tree to have a 2nd TURN with a topic that repeats — tri, SchemaVersionGuardTests
 
 ### Community 19 - "Community 19"
 
@@ -492,13 +499,13 @@ Nodes (6): CliApiVersionCheckTests, Tests for fs_guard Python-importable validat
 
 ### Community 34 - "Community 34"
 
-Cohesion: 0.12
+Cohesion: 0.13
 Nodes (11): AssembleGatewayBindingTests, \_AssembleHarness, AssembleIdentityTests, AssembleParseWarningsTests, AssembleSerializableTests, AssembleSessionNotFoundTests, AssembleTraceIdTests, AssembleTreeShapeTests (+3 more)
 
 ### Community 35 - "Community 35"
 
-Cohesion: 0.11
-Nodes (23): \_content_quality(), \_gateway_records(), \_gateway_request_tags(), \_gateway_requests(), \_gateway_responses(), \_generations(), \_IDs, \_interactions() (+15 more)
+Cohesion: 0.12
+Nodes (22): \_content_quality(), \_gateway_records(), \_gateway_request_tags(), \_gateway_requests(), \_gateway_responses(), \_generations(), \_IDs, \_interactions() (+14 more)
 
 ### Community 36 - "Community 36"
 
@@ -537,8 +544,8 @@ Nodes (7): Path, \_build_workdir(), MainTests, Tests for `finalize` — declared
 
 ### Community 43 - "Community 43"
 
-Cohesion: 0.08
-Nodes (7): IsMessagingIdTests, LoadSqlTests, ParseTests, PostTests, Tests for `dc` (Data Cloud transport) + `resolve_session` (messaging-id → UU, ResolveDiskOrLiveTests, ResolveLiveTests
+Cohesion: 0.05
+Nodes (18): IsMessagingIdTests, LoadSqlTests, ParseTests, PostTests, Tests for `dc` (Data Cloud transport) + `resolve_session` (messaging-id → UU, Happy path — dedicated command returns a clean token., Older sf CLI: show-access-token unknown → use display payload., Edge case: dedicated command returns the placeholder string — treat as f (+10 more)
 
 ### Community 44 - "Community 44"
 
@@ -557,8 +564,8 @@ Nodes (6): ErrorMock, MultiCalloutMock, SuccessMock, TimeoutMock, ValidatingMock
 
 ### Community 47 - "Community 47"
 
-Cohesion: 0.14
-Nodes (22): datetime, \_autodetect_tz(), compose_sql(), \_escape_like_pattern(), fetch_agent_names(), \_fmt_channel(), \_fmt_duration(), \_fmt_start() (+14 more)
+Cohesion: 0.15
+Nodes (20): datetime, \_autodetect_tz(), compose_sql(), \_escape_like_pattern(), \_fmt_channel(), \_fmt_duration(), \_fmt_start(), main() (+12 more)
 
 ### Community 48 - "Community 48"
 
@@ -592,13 +599,13 @@ Nodes (12): \_classify_session_shape(), 6-value session-shape diagnostic. First 
 
 ### Community 56 - "Community 56"
 
-Cohesion: 0.10
-Nodes (11): Happy path — dedicated command returns a clean token., Older sf CLI: show-access-token unknown → use display payload., Edge case: dedicated command returns the placeholder string — treat as f, If both paths return the placeholder, surface a clean SystemExit rather, sf binary not on PATH — bail with the upgrade hint., org_display itself failing is fatal — no instanceUrl, no recovery., Tripwire — primary call MUST be `sf org auth show-access-token` with `--, The legacy fallback path stays armed: org_display still runs         with `--ver (+3 more)
+Cohesion: 0.02
+Nodes (7): BusinessHours, Case, TestDataFactory_Test, Contact, Account, insert, User
 
 ### Community 57 - "Community 57"
 
-Cohesion: 0.14
-Nodes (19): Any, \_load_recipe(), \_parse_stdout_json(), sf CLI recipe loader — reads assets/cli/\*.yaml, runs argv via subprocess. Secur, Check if any auth-failure pattern appears on an Error:/Warning: line. previ, Execute a recipe-defined sf CLI command and return parsed stdout. Steps:, run stderr text through the rest_client redaction regexes. stderr may conta, sf CLI returned non-zero exit or JSON status != 0. Message is redacted bef (+11 more)
+Cohesion: 0.20
+Nodes (14): Any, \_load_recipe(), \_parse_stdout_json(), sf CLI recipe loader — reads assets/cli/\*.yaml, runs argv via subprocess. Secur, Check if any auth-failure pattern appears on an Error:/Warning: line. previ, Execute a recipe-defined sf CLI command and return parsed stdout. Steps:, run stderr text through the rest_client redaction regexes. stderr may conta, Read and parse a CLI recipe file with yaml.safe_load. \_SAFE_LOADER is bound (+6 more)
 
 ### Community 58 - "Community 58"
 
@@ -642,7 +649,7 @@ Nodes (6): \_basic_tr(), ComposeSqlTests, \_picker_filters(), Tests for `discove
 
 ### Community 67 - "Community 67"
 
-Cohesion: 0.14
+Cohesion: 0.15
 Nodes (8): \_fake_waterfall(), MainDcAccessDeniedTests, MainHappyPathTests, \_MainHarness, MainMessagingIdTests, Tests for `fetch_dc.main` orchestration. Drives the CLI via `argv` patching, Mutate ctx the way the real waterfall would: stamp identity + append a few q, Patch DATA_ROOT + the 4 boundary functions so main() runs offline.
 
 ### Community 68 - "Community 68"
@@ -652,8 +659,8 @@ Nodes (4): MainTests, \_minimal_tree(), Tests for `summarize_tree` — declared-
 
 ### Community 69 - "Community 69"
 
-Cohesion: 0.14
-Nodes (19): Path, RuntimeError, build*probe_cache_dir(), Return PROBE_CACHE_ROOT/<org_id_15>/<api_version>/. org_id_15 via validate*, \_describe_sobject(), \_extract_queryable_fields(), invalidate_and_reprobe(), \_is_cache_fresh() (+11 more)
+Cohesion: 0.12
+Nodes (22): Path, Shared paths + constants for investigating-agentforce-architecture. Resolves SK, Path, build*agent_cache_dir(), build_agent_data_dir(), build_probe_cache_dir(), Return CACHE_ROOT/<org_id_15>/<agent_api_name>\_\_<agent_version>/. Mirrors `, Return PROBE_CACHE_ROOT/<org_id_15>/<api_version>/. org_id_15 via validate* (+14 more)
 
 ### Community 70 - "Community 70"
 
@@ -687,8 +694,8 @@ Nodes (19): datetime, \_action_short_name(), \_escape_mermaid_label(), \_flowcha
 
 ### Community 77 - "Community 77"
 
-Cohesion: 0.16
-Nodes (7): Path, \_GatewayDirectHarness, GatewayDirectRenderTests, GatewayDirectShapeTests, \_materialization_lag_mutator(), The gateway-direct render branch is short — covers identity, lag banner, and, Make the fixture look like a session whose STDM hierarchy hasn't materialize
+Cohesion: 0.15
+Nodes (8): Path, \_GatewayDirectHarness, GatewayDirectRenderTests, GatewayDirectShapeTests, \_materialization_lag_mutator(), Integration tests for `assemble_dc._assemble_gateway_direct`. Drives the mate, The gateway-direct render branch is short — covers identity, lag banner, and, Make the fixture look like a session whose STDM hierarchy hasn't materialize
 
 ### Community 78 - "Community 78"
 
@@ -712,8 +719,8 @@ Nodes (6): LoadSoqlInListParamTests, `load_soql_in` renders `WHERE X IN (...)` l
 
 ### Community 82 - "Community 82"
 
-Cohesion: 0.17
-Nodes (17): Any, Path, Element, \_find_text(), list_prompt_template_metadata(), \_parse_prompt_template_xml(), Metadata API listMetadata wrappers — for sObjects that are NOT exposed via SOQL, Thin wrapper over `subprocess.run` for the retrieve-start call. Exists so t (+9 more)
+Cohesion: 0.21
+Nodes (13): Any, Path, Element, \_find_text(), \_parse_prompt_template_xml(), Metadata API listMetadata wrappers — for sObjects that are NOT exposed via SOQL, Thin wrapper over `subprocess.run` for the retrieve-start call. Exists so t, Retrieve GenAiPromptTemplate bodies via `sf project retrieve start`. The sf (+5 more)
 
 ### Community 83 - "Community 83"
 
@@ -787,13 +794,13 @@ Nodes (8): main(), Sort `root.children` and each TOPIC's children alphabetically
 
 ### Community 98 - "Community 98"
 
-Cohesion: 0.12
-Nodes (15): \_collect_wave_b_targets(), \_extract_refs_from_flow_metadata(), \_fetch_wave_b_by_names(), \_iterate_wave_b(), Scan fetched Flow.Metadata dicts for downstream subflow + apex refs. Return, Drive Wave B to fixed-point for nested subflow / apex discovery. The initia, Run the 7-query GenAi normalized DAG in layered parallel steps. A1 resolves, Walk topics + plannerActions. Return {kind: [invocation_target, ...]}. Dedu (+7 more)
+Cohesion: 0.14
+Nodes (13): \_collect_wave_b_targets(), \_fetch_wave_b_by_names(), Run the 7-query GenAi normalized DAG in layered parallel steps. A1 resolves, Walk topics + plannerActions. Return {kind: [invocation_target, ...]}. Dedu, Fire body fetches for an explicit set of Apex/Flow identifiers. Factored ou, Fire body fetches for every Apex/Flow target in the bundle. Returns a dict, \_run_wave_a(), \_run_wave_b() (+5 more)
 
 ### Community 99 - "Community 99"
 
-Cohesion: 0.12
-Nodes (11): REST request failed — always constructed with a redacted message., RestClientError, ApiVersionEndToEndTests, ArgParseSmokeTests, PromptTemplateBodyAttachmentTests, The existing `Refresh401Tests` mocks at the `tooling_query` boundary — it by, the `api_version` reported by `sf org display --json` threads through the pi, Gap C: `_stamp_prompt_template_bodies` attaches retrieved body fields onto m (+3 more)
+Cohesion: 0.10
+Nodes (26): RuntimeError, ProbeError, Probe could not complete — surfaced to caller, redaction already applied., REST request failed — always constructed with a redacted message., RestClientError, AuthRequired, sf CLI returned a known auth-failure pattern. Carries a redacted stderr sni, sf CLI returned non-zero exit or JSON status != 0. Message is redacted bef (+18 more)
 
 ### Community 100 - "Community 100"
 
@@ -932,8 +939,8 @@ Nodes (11): check_agent_version(), check_api_name(), check_api_version(), check_
 
 ### Community 129 - "Community 129"
 
-Cohesion: 0.20
-Nodes (11): load_sql(), parse(), post(), Data Cloud queries for investigating-agentforce-d360. Two responsibilities: 1., POST SQL to Data Cloud Query API, return parsed rows. `query_name` is a hum, Read assets/dc/<name>.sql and substitute {{PARAM}} placeholders. Add a new, Data Cloud response → list of row dicts. No field knowledge. Callers pick w, Shell out + parse JSON. SystemExits on FileNotFoundError / CalledProcessErro (+3 more)
+Cohesion: 0.16
+Nodes (13): load_sql(), parse(), post(), Data Cloud queries for investigating-agentforce-d360. Two responsibilities: 1., POST SQL to Data Cloud Query API, return parsed rows. `query_name` is a hum, Read assets/dc/<name>.sql and substitute {{PARAM}} placeholders. Add a new, Data Cloud response → list of row dicts. No field knowledge. Callers pick w, Shell out + parse JSON. SystemExits on FileNotFoundError / CalledProcessErro (+5 more)
 
 ### Community 130 - "Community 130"
 
@@ -1002,8 +1009,8 @@ Nodes (4): BenchmarkComparison, DataStructureBenchmark, LoopBenchmark, StringBen
 
 ### Community 143 - "Community 143"
 
-Cohesion: 0.24
-Nodes (8): LookupError, load_soql(), SOQL template loader — reads assets/soql/\*.soql and substitutes {{PARAM}} values, Raised when a parameter value fails revalidation at the substitution site., Raised when `load_soql(name)` cannot locate a matching template file. the m, Read assets/soql/<name>.soql and substitute {{PARAM}} placeholders. every v, SoqlParamError, SoqlTemplateNotFound
+Cohesion: 0.25
+Nodes (6): LookupError, SOQL template loader — reads assets/soql/\*.soql and substitutes {{PARAM}} values, Raised when a parameter value fails revalidation at the substitution site., Raised when `load_soql(name)` cannot locate a matching template file. the m, SoqlParamError, SoqlTemplateNotFound
 
 ### Community 144 - "Community 144"
 
@@ -1149,11 +1156,6 @@ Nodes (5): AcceptEncodingAndForbiddenInvalidSessionTests, Accept-Encoding: ident
 
 Cohesion: 0.43
 Nodes (6): Path, main(), miss(), Emit CACHE_HIT=false and exit 0. if `reason` is provided, emit a second K=V, `shutil.rmtree(target)` ONLY if `target` resolves under CACHE_ROOT. Defence, \_safe_rmtree_under_cache_root()
-
-### Community 182 - "Community 182"
-
-Cohesion: 0.33
-Nodes (6): Path, Shared paths + constants for investigating-agentforce-architecture. Resolves SK, build_agent_cache_dir(), build_agent_data_dir(), Return CACHE_ROOT/<org_id_15>/<agent_api_name>**<agent_version>/. Mirrors `, Return DATA_ROOT/<org_id_15>/<agent_api_name>**<agent_version>/. Thin wrapp
 
 ### Community 183 - "Community 183"
 
@@ -1305,27 +1307,47 @@ Nodes (3): build_fetch_graph(), BFS graph builder — walks the cross-type refer
 Cohesion: 0.83
 Nodes (3): apply_spec(), main(), traverse()
 
+### Community 260 - "Community 260"
+
+Cohesion: 0.14
+Nodes (7): Path, Compute the canonical session dir under a tmp DATA_ROOT., Materialize the synthetic session under ``<data_root>/<org>/<agent>\_\_<ver>/<sid>, session_dir_for(), write_to_disk(), ResolveFromDiskTests, MainForSessionTests
+
+### Community 287 - "Community 287"
+
+Cohesion: 0.13
+Nodes (8): AutoFieldDefaultValue, FieldDefaultValue, IFieldDefaultValue, ListFieldDefaultValue, RelationshipFieldDefaultValue, TestDataFactoryException, insert, Exception
+
+### Community 288 - "Community 288"
+
+Cohesion: 0.14
+Nodes (4): IDefaultValueProvider, ISObjectFactory, SObjectFactory, merge
+
+### Community 293 - "Community 293"
+
+Cohesion: 0.29
+Nodes (4): the skill contract says every exit path emits a RESULT block. Before the fix, the redacted error_detail must not leak tokens even if the exception mes, argparse's --help path raises SystemExit. That MUST propagate unchanged, UncaughtExceptionToResultBlockTests
+
 ## Knowledge Gaps
 
-- **208 isolated node(s):** `System`, `System`, `System`, `omnistudio`, `insert` (+203 more)
+- **216 isolated node(s):** `System`, `System`, `System`, `omnistudio`, `insert` (+211 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **75 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **79 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `DCQueryError` connect `Community 59` to `Community 129`, `Community 66`, `Community 161`, `Community 195`, `Community 69`, `Community 196`, `Community 197`, `Community 111`, `Community 47`, `Community 185`, `Community 124`, `Community 29`?**
-  _High betweenness centrality (0.062) - this node is a cross-community bridge._
-- **Why does `RestClientError` connect `Community 99` to `Community 130`, `Community 131`, `Community 4`, `Community 132`, `Community 13`, `Community 15`, `Community 147`, `Community 26`, `Community 162`, `Community 174`, `Community 175`, `Community 57`, `Community 187`, `Community 188`, `Community 69`, `Community 198`, `Community 199`, `Community 200`, `Community 92`, `Community 97`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
-- **Why does `DcAccessDenied` connect `Community 29` to `Community 59`, `Community 69`?**
-  _High betweenness centrality (0.029) - this node is a cross-community bridge._
+- **Why does `DCQueryError` connect `Community 59` to `Community 129`, `Community 66`, `Community 99`, `Community 161`, `Community 195`, `Community 196`, `Community 197`, `Community 111`, `Community 47`, `Community 185`, `Community 124`, `Community 29`?**
+  _High betweenness centrality (0.052) - this node is a cross-community bridge._
+- **Why does `main()` connect `Community 45` to `Community 105`, `Community 53`?**
+  _High betweenness centrality (0.024) - this node is a cross-community bridge._
+- **Why does `DcAccessDenied` connect `Community 29` to `Community 59`, `Community 99`?**
+  _High betweenness centrality (0.020) - this node is a cross-community bridge._
+- **Are the 6 inferred relationships involving `TestDataFactory_Test` (e.g. with `BusinessHours` and `Case`) actually correct?**
+  _`TestDataFactory_Test` has 6 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 41 inferred relationships involving `SfCliError` (e.g. with `Namespace` and `Path`) actually correct?**
   _`SfCliError` has 41 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 41 inferred relationships involving `AuthRequired` (e.g. with `Namespace` and `Path`) actually correct?**
   _`AuthRequired` has 41 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 3 inferred relationships involving `Path` (e.g. with `RestClientError` and `AuthRequired`) actually correct?**
   _`Path` has 3 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 36 inferred relationships involving `RestClientError` (e.g. with `Namespace` and `Path`) actually correct?**
-  _`RestClientError` has 36 INFERRED edges - model-reasoned connections that need verification._

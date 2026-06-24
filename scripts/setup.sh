@@ -127,29 +127,11 @@ if command -v graphify &>/dev/null; then
   success "graphify ready — use 'graphify query \"<question>\"' or '/graphify .' in Claude Code"
 fi
 
-# ─── 7. TestDataFactory package (optional — needs a target org) ──────────────
-header "6/6  Salesforce package installation"
-
-INSTALL_TDF="n"
-read -rp "  Install TestDataFactory package now? (requires authenticated org) [y/N]: " INSTALL_TDF
-
-if [[ "${INSTALL_TDF,,}" == "y" ]]; then
-  if command -v sf &>/dev/null; then
-    info "Installing TestDataFactory unlocked package..."
-    sf package install \
-      --package 04t1n000002WsK5AAK \
-      --target-org "$ORG_ALIAS" \
-      --no-prompt \
-      --wait 10
-    success "TestDataFactory installed"
-  else
-    warn "'sf' CLI not found — install Salesforce CLI then run:"
-    warn "  sf package install --package 04t1n000002WsK5AAK --target-org $ORG_ALIAS --no-prompt"
-  fi
-else
-  info "Skipped. Run later:"
-  info "  sf package install --package 04t1n000002WsK5AAK --target-org <alias> --no-prompt"
-fi
+# ─── 7. TestDataFactory — source-tracked, no package install needed ───────────
+header "6/6  TestDataFactory"
+info "TestDataFactory (benahm) is source-tracked in force-app/main/default/classes/"
+info "It deploys automatically with 'sf project deploy start' — no package install required."
+success "TestDataFactory ready"
 
 # ─── Optional: create scratch org ─────────────────────────────────────────────
 CREATE_SCRATCH="n"
