@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "description": "Salesforce App",
   "scripts": {
+    "setup": "node scripts/setup.js",
+    "test:setup": "jest --config scripts/jest.config.js",
     "lint": "eslint **/{aura,lwc}/**/*.js",
     "test": "npm run test:unit",
     "test:unit": "sfdx-lwc-jest",
@@ -38,7 +40,7 @@
       "eslint"
     ],
     "**/lwc/**": [
-        "sfdx-lwc-jest -- --bail --findRelatedTests --passWithNoTests"
+      "sfdx-lwc-jest -- --bail --findRelatedTests --passWithNoTests"
     ]
   }
 }
