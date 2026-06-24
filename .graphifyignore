@@ -1,0 +1,13 @@
+# Exclude docs and markdown from semantic extraction
+# Code (.cls, .trigger, .js) is processed via AST (no API key needed)
+docs/
+*.md
+*.yaml
+*.yml
+*.json
+node_modules/
+.git/
+.sfdx/
+libs/
+graphify-out/
+"SalesforceProject setup/"

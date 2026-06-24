@@ -1,0 +1,27 @@
+{
+  "orgName": "{{PROJECT_NAME}} Full",
+  "edition": "Developer",
+  "features": [
+    "EnableSetPasswordInApi",
+    "Communities",
+    "ServiceCloud",
+    "SalesCloud"
+  ],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": false
+    },
+    "caseSettings": {
+      "emailToCase": {
+        "enableEmailToCase": true
+      }
+    },
+    "communitiesSettings": {
+      "enableNetworksEnabled": true
+    }
+  },
+  "description": "Full-featured scratch org with Service Cloud, Sales Cloud, and Communities enabled. Use for integration testing or demo preparation."
+}

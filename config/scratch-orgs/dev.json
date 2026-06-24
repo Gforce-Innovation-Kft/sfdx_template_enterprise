@@ -1,0 +1,14 @@
+{
+  "orgName": "{{PROJECT_NAME}} Dev",
+  "edition": "Developer",
+  "features": ["EnableSetPasswordInApi"],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": false
+    }
+  },
+  "description": "Developer scratch org for local development. Lightweight, fast to spin up."
+}

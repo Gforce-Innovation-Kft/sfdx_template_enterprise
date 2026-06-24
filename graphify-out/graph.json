@@ -1,0 +1,151 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "eslint.config.js",
+      "file_type": "code",
+      "source_file": "eslint.config.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 0,
+      "norm_label": "eslint.config.js",
+      "id": "eslint_config"
+    },
+    {
+      "label": "{ defineConfig }",
+      "file_type": "code",
+      "source_file": "eslint.config.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 0,
+      "norm_label": "{ defineconfig }",
+      "id": "eslint_config_defineconfig"
+    },
+    {
+      "label": "eslintJs",
+      "file_type": "code",
+      "source_file": "eslint.config.js",
+      "source_location": "L2",
+      "_origin": "ast",
+      "community": 0,
+      "norm_label": "eslintjs",
+      "id": "eslint_config_eslintjs"
+    },
+    {
+      "label": "jestPlugin",
+      "file_type": "code",
+      "source_file": "eslint.config.js",
+      "source_location": "L3",
+      "_origin": "ast",
+      "community": 0,
+      "norm_label": "jestplugin",
+      "id": "eslint_config_jestplugin"
+    },
+    {
+      "label": "auraConfig",
+      "file_type": "code",
+      "source_file": "eslint.config.js",
+      "source_location": "L4",
+      "_origin": "ast",
+      "community": 0,
+      "norm_label": "auraconfig",
+      "id": "eslint_config_auraconfig"
+    },
+    {
+      "label": "lwcConfig",
+      "file_type": "code",
+      "source_file": "eslint.config.js",
+      "source_location": "L5",
+      "_origin": "ast",
+      "community": 0,
+      "norm_label": "lwcconfig",
+      "id": "eslint_config_lwcconfig"
+    },
+    {
+      "label": "globals",
+      "file_type": "code",
+      "source_file": "eslint.config.js",
+      "source_location": "L6",
+      "_origin": "ast",
+      "community": 0,
+      "norm_label": "globals",
+      "id": "eslint_config_globals"
+    },
+    {
+      "label": "jest.config.js",
+      "file_type": "code",
+      "source_file": "jest.config.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "jest.config.js",
+      "id": "jest_config"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "eslint.config.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "eslint_config",
+      "target": "eslint_config_auraconfig"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "eslint.config.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "eslint_config",
+      "target": "eslint_config_defineconfig"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "eslint.config.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "eslint_config",
+      "target": "eslint_config_eslintjs"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "eslint.config.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "eslint_config",
+      "target": "eslint_config_globals"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "eslint.config.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "eslint_config",
+      "target": "eslint_config_jestplugin"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "eslint.config.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "eslint_config",
+      "target": "eslint_config_lwcconfig"
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "ec6fa93c359b7471d7f72b7c1d708531482912e3"
+}

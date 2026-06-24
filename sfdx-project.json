@@ -3,9 +3,18 @@
     {
       "path": "force-app",
       "default": true
+    },
+    {
+      "path": "libs/fflib-apex-common/sfdx-source/apex-common"
+    },
+    {
+      "path": "libs/fflib-apex-mocks/sfdx-source/apex-mocks"
+    },
+    {
+      "path": "libs/NebulaLogger/nebula-logger/core"
     }
   ],
-  "name": "sfdx_template_enterprise",
+  "name": "{{PROJECT_NAME}}",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "67.0"

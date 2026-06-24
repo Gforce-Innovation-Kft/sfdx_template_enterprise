@@ -46,3 +46,12 @@ $RECYCLE.BIN/
 **/__pycache__/
 **/.venv/
 **/venv/
+
+# Graphify — commit graph.json, GRAPH_REPORT.md, manifest.json; ignore generated/cache files
+graphify-out/graph.html
+graphify-out/.graphify_analysis.json
+graphify-out/.graphify_labels.json
+graphify-out/cache/
+
+# Local scratch / planning dirs
+SalesforceProject setup/

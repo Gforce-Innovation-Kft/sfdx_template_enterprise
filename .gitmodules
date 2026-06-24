@@ -1,0 +1,11 @@
+[submodule "libs/fflib-apex-common"]
+	path = libs/fflib-apex-common
+	url = https://github.com/apex-enterprise-patterns/fflib-apex-common.git
+
+[submodule "libs/fflib-apex-mocks"]
+	path = libs/fflib-apex-mocks
+	url = https://github.com/apex-enterprise-patterns/fflib-apex-mocks.git
+
+[submodule "libs/NebulaLogger"]
+	path = libs/NebulaLogger
+	url = https://github.com/jongpie/NebulaLogger.git

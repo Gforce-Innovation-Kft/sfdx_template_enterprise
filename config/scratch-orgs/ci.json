@@ -1,0 +1,17 @@
+{
+  "orgName": "{{PROJECT_NAME}} CI",
+  "edition": "Developer",
+  "features": ["EnableSetPasswordInApi"],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": false
+    },
+    "apexSettings": {
+      "enableAggregateCodeCoverageOnly": false
+    }
+  },
+  "description": "CI scratch org used in GitHub Actions validate-pr pipeline. Short-lived, deleted after test run."
+}
