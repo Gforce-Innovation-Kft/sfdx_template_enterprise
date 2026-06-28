@@ -20,12 +20,7 @@ sf org create scratch \
 echo "▶ Pushing source..."
 sf project deploy start --target-org "$ALIAS"
 
-echo "▶ Installing TestDataFactory..."
-sf package install \
-  --package 04t1n000002WsK5AAK \
-  --target-org "$ALIAS" \
-  --no-prompt \
-  --wait 10
+
 
 echo "✔ Scratch org ready: $ALIAS"
 echo "  Open: sf org open --target-org $ALIAS"

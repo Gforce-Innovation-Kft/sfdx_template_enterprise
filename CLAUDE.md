@@ -34,8 +34,13 @@ When `graphify-out/graph.json` exists:
 `generating-apex`, `generating-apex-test`, `generating-lwc-components`,
 `running-apex-tests`, `deploying-metadata`, `running-code-analyzer`, and 75+ more.
 
-**GForce custom skill** (`.claude/skills/new-requirement/`):
-Create a GRS `REQ-NNN.yaml` from a business description.
+**GForce custom skills:**
+
+| Skill                  | Trigger                              | Purpose                                                                                                                                        |
+| ---------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `salesforce-developer` | Any Apex / LWC / trigger / test task | Volume context, layer checklist, governor limit discipline, boundary conditions, 90% coverage gate — load before generating any technical code |
+| `new-requirement`      | New feature request                  | Generate a `REQ-NNN.yaml` from a business description                                                                                          |
+| `using-nebula-logger`  | Any `Logger.*` usage                 | Full NebulaLogger API reference                                                                                                                |
 
 ## GForce Reference Files (`.claude/references/`)
 
