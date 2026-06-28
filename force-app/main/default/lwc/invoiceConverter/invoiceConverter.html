@@ -1,0 +1,81 @@
+<template>
+  <lightning-card title={labels.title} icon-name="custom:custom53">
+    <div class="slds-var-p-horizontal_medium slds-var-p-bottom_medium">
+      <template lwc:if={isLoading}>
+        <lightning-spinner
+          alternative-text={labels.loading}
+          size="small"
+        ></lightning-spinner>
+      </template>
+      <template lwc:elseif={hasError}>
+        <div
+          class="slds-notify slds-notify_alert slds-alert_error"
+          role="alert"
+        >
+          <span class="slds-assistive-text">error</span>
+          <p class="slds-text-color_error">{errorMessage}</p>
+        </div>
+      </template>
+      <template lwc:elseif={isEmpty}>
+        <p class="slds-text-color_weak">{labels.notFound}</p>
+      </template>
+      <template lwc:else>
+        <dl class="slds-list_horizontal slds-wrap">
+          <dt class="slds-item_label slds-text-color_weak slds-truncate">
+            {labels.amount}
+          </dt>
+          <dd class="slds-item_detail slds-truncate">
+            <lightning-formatted-number
+              value={invoice.Amount__c}
+              minimum-fraction-digits="2"
+            ></lightning-formatted-number>
+            &nbsp;{invoice.Currency_ISO__c}
+          </dd>
+
+          <dt class="slds-item_label slds-text-color_weak slds-truncate">
+            {labels.baseAmount}
+          </dt>
+          <dd class="slds-item_detail slds-truncate">
+            <lightning-formatted-number
+              value={invoice.Amount_Base__c}
+              minimum-fraction-digits="2"
+            ></lightning-formatted-number>
+          </dd>
+
+          <dt class="slds-item_label slds-text-color_weak slds-truncate">
+            {labels.rate}
+          </dt>
+          <dd class="slds-item_detail slds-truncate">{invoice.FX_Rate__c}</dd>
+
+          <dt class="slds-item_label slds-text-color_weak slds-truncate">
+            {labels.rateDate}
+          </dt>
+          <dd class="slds-item_detail slds-truncate">
+            <lightning-formatted-date-time
+              value={invoice.Rate_Date__c}
+              year="numeric"
+              month="short"
+              day="2-digit"
+            ></lightning-formatted-date-time>
+          </dd>
+
+          <dt class="slds-item_label slds-text-color_weak slds-truncate">
+            {labels.status}
+          </dt>
+          <dd class="slds-item_detail slds-truncate">
+            <lightning-badge label={invoice.Status__c}></lightning-badge>
+          </dd>
+        </dl>
+      </template>
+    </div>
+
+    <div slot="footer">
+      <lightning-button
+        variant="brand"
+        label={labels.convert}
+        onclick={handleConvert}
+        disabled={isConverting}
+      ></lightning-button>
+    </div>
+  </lightning-card>
+</template>

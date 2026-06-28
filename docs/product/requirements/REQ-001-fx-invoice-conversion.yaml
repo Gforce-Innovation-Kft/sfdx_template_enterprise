@@ -1,0 +1,52 @@
+id: REQ-001
+title: Multi-currency invoice conversion with live FX rates
+jira_epic: "{{REPLACE}}"
+jira_stories: []
+status: draft
+priority: medium
+business_goal: >
+  Let finance users capture invoices in any source currency and automatically convert the
+  amount into the company base currency using live ECB reference rates, so reporting and
+  reconciliation always have a comparable base-currency figure.
+actors:
+  - role: Finance User
+  - role: Sales Operations
+salesforce:
+  objects:
+    - Invoice__c
+    - Account
+    - FX_Setting__mdt
+  processes:
+    - Validate invoice amount and currency on save (trigger/domain)
+    - Convert invoice amount to base currency via FX callout (service/gateway)
+    - Display and trigger conversion from the invoice record page (LWC)
+  clouds:
+    - Sales Cloud
+acceptance_criteria:
+  - >
+    Given an invoice with a positive amount and a valid 3-letter ISO currency, when it is
+    inserted, then Status defaults to Draft and the currency code is stored upper-cased.
+  - >
+    Given an invoice with an amount of zero or less, when it is saved, then a validation
+    error is shown and the record is not saved.
+  - >
+    Given a Draft invoice in a non-base currency, when a user clicks Convert on the record
+    page, then Amount (Base Currency), FX Rate and Rate Date are populated from the live FX
+    provider and Status becomes Converted.
+  - >
+    Given a converted invoice, when its source amount or currency is changed, then the
+    previous conversion is cleared and Status returns to Draft.
+  - >
+    Given the FX provider is unavailable, when conversion runs, then the invoice is marked
+    Failed, the error is logged via NebulaLogger, and other invoices in the batch still
+    process.
+integrations:
+  - Frankfurter FX API (https://api.frankfurter.app) via the Frankfurter Named Credential (no auth)
+security:
+  sharing_model: Read/Write
+  permission_sets:
+    - FX_Invoice_Admin
+notes: >
+  Reference/demo feature shipped with the template. Base currency and API path are
+  configured in FX_Setting__mdt (Default record = EUR, /latest). Conversion runs one
+  callout per distinct currency pair and commits all DML through a single Unit of Work.

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>FX_Invoice_Title</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FX Invoice card title</shortDescription>
+        <value>FX Conversion</value>
+    </labels>
+    <labels>
+        <fullName>FX_Invoice_Loading</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FX Invoice loading text</shortDescription>
+        <value>Loading invoice…</value>
+    </labels>
+    <labels>
+        <fullName>FX_Invoice_Not_Found</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FX Invoice empty state</shortDescription>
+        <value>No invoice to display.</value>
+    </labels>
+    <labels>
+        <fullName>FX_Invoice_Convert</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FX Invoice convert button</shortDescription>
+        <value>Convert / Refresh Rate</value>
+    </labels>
+    <labels>
+        <fullName>FX_Invoice_Amount</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FX Invoice amount caption</shortDescription>
+        <value>Amount</value>
+    </labels>
+    <labels>
+        <fullName>FX_Invoice_Base_Amount</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FX Invoice base amount caption</shortDescription>
+        <value>Amount (Base Currency)</value>
+    </labels>
+    <labels>
+        <fullName>FX_Invoice_Rate</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FX Invoice rate caption</shortDescription>
+        <value>FX Rate</value>
+    </labels>
+    <labels>
+        <fullName>FX_Invoice_Rate_Date</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FX Invoice rate date caption</shortDescription>
+        <value>Rate Date</value>
+    </labels>
+    <labels>
+        <fullName>FX_Invoice_Status</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FX Invoice status caption</shortDescription>
+        <value>Status</value>
+    </labels>
+    <labels>
+        <fullName>FX_Invoice_Convert_Success</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FX Invoice conversion success toast</shortDescription>
+        <value>Conversion complete.</value>
+    </labels>
+    <labels>
+        <fullName>FX_Invoice_Convert_Error</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >FX Invoice conversion error toast title</shortDescription>
+        <value>Conversion error</value>
+    </labels>
+    <labels>
+        <fullName>FX_Invoice_Unknown_Error</fullName>
+        <categories>FX Invoice</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FX Invoice generic error fallback</shortDescription>
+        <value>An unexpected error occurred.</value>
+    </labels>
+</CustomLabels>
