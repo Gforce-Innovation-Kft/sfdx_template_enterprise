@@ -13,8 +13,7 @@ public class InvoiceTestFactory {
     Map<String, Object> overrides,
     Boolean doInsert
   ) {
-    Map<String, Object> defaults = baseDefaults();
-    defaults.put('Account__r.Name', 'Test Account');
+    Map<String, Object> defaults = withAccount(overrides, doInsert);
     if (overrides != null) {
       defaults.putAll(overrides);
     }
@@ -30,8 +29,7 @@ public class InvoiceTestFactory {
     Map<String, Object> overrides,
     Boolean doInsert
   ) {
-    Map<String, Object> defaults = baseDefaults();
-    defaults.put('Account__r.Name', 'Test Account {!index}');
+    Map<String, Object> defaults = withAccount(overrides, doInsert);
     if (overrides != null) {
       defaults.putAll(overrides);
     }
@@ -63,6 +61,25 @@ public class InvoiceTestFactory {
       );
     }
     return invoices;
+  }
+
+  /**
+   * Base defaults plus a real parent Account (Account__c Id), unless the caller
+   * already supplied one. The Account is only created when the invoice will be
+   * inserted, so doInsert=false builds stay DML-free.
+   */
+  private static Map<String, Object> withAccount(
+    Map<String, Object> overrides,
+    Boolean doInsert
+  ) {
+    Map<String, Object> defaults = baseDefaults();
+    Boolean callerSuppliedAccount =
+      overrides != null && overrides.containsKey('Account__c');
+    if (doInsert && !callerSuppliedAccount) {
+      Account parent = AccountTestFactory.createAccount(null);
+      defaults.put('Account__c', parent.Id);
+    }
+    return defaults;
   }
 
   private static Map<String, Object> baseDefaults() {
