@@ -100,6 +100,15 @@ List<Contact> cons = TestDataFactory.createSObjectList('Contact', new Map<String
 }, 3);
 ```
 
+> ⚠️ **Do not link a custom lookup with `__r.Name` dot-notation on an inserted
+> record.** Writing `'Account__r.Name' => 'Test Account'` makes the platform treat
+> `Account__r` as an external foreign-key reference, which fails on insert:
+> `Cannot specify both an external ID reference Account__r and a salesforce id, Account__c`
+> and `More than 1 field provided in an external foreign key reference`.
+>
+> Instead create the real parent via its own factory and set the `__c` Id (or pass
+> the inserted SObject as the relationship value). See the `withAccount` pattern below.
+
 ---
 
 ## DEFAULT_VALUE sentinel
@@ -153,6 +162,55 @@ Usage in tests:
 ```apex
 Account acc = AccountTestFactory.createAccount(new Map<String,Object>{ 'Name' => 'Acme' });
 List<Account> accs = AccountTestFactory.createAccounts(200, null);
+```
+
+### Child factory with a real parent (the `withAccount` pattern)
+
+When a record needs a parent via a **custom lookup**, the wrapper creates the
+parent through its own factory and sets the `__c` Id — only on the insert path,
+so `doInsert = false` builds stay DML-free. This is the correct alternative to
+`__r.Name` dot-notation (see the warning above).
+
+```apex
+// InvoiceTestFactory.cls
+public static Invoice__c createInvoice(Map<String, Object> overrides, Boolean doInsert) {
+  Map<String, Object> defaults = withAccount(overrides, doInsert);
+  if (overrides != null) {
+    defaults.putAll(overrides);
+  }
+  return (Invoice__c) TestDataFactory.createSObject('Invoice__c', defaults, doInsert);
+}
+
+private static Map<String, Object> withAccount(Map<String, Object> overrides, Boolean doInsert) {
+  Map<String, Object> defaults = new Map<String, Object>{
+    'Amount__c' => 100,
+    'Currency_ISO__c' => 'USD'
+  };
+  Boolean callerSuppliedAccount = overrides != null && overrides.containsKey('Account__c');
+  if (doInsert && !callerSuppliedAccount) {
+    Account parent = AccountTestFactory.createAccount(null); // inserted, has an Id
+    defaults.put('Account__c', parent.Id);
+  }
+  return defaults;
+}
+```
+
+For pure fflib unit tests that mock selectors/UoW and must not touch the DB, expose
+a separate in-memory builder that assigns fake Ids and sets no relationships:
+
+```apex
+public static List<Invoice__c> createInvoicesInMemory(Integer count, String currencyIso) {
+  List<Invoice__c> invoices = new List<Invoice__c>();
+  for (Integer i = 0; i < count; i++) {
+    invoices.add(new Invoice__c(
+      Id = fflib_IDGenerator.generate(Invoice__c.SObjectType),
+      Amount__c = 100,
+      Currency_ISO__c = currencyIso,
+      Status__c = 'Draft'
+    ));
+  }
+  return invoices;
+}
 ```
 
 ---

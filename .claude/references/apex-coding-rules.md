@@ -9,6 +9,7 @@ Read this file before generating any Apex code. These rules are non-negotiable o
 All Apex must handle 200+ records without hitting governor limits.
 
 **BAD**
+
 ```apex
 for (Account acc : accounts) {
     Contact c = [SELECT Id FROM Contact WHERE AccountId = :acc.Id LIMIT 1]; // SOQL in loop
@@ -17,6 +18,7 @@ for (Account acc : accounts) {
 ```
 
 **GOOD**
+
 ```apex
 Set<Id> accountIds = new Map<Id, Account>(accounts).keySet();
 Map<Id, Contact> contactsByAccount = new Map<Id, Contact>();
@@ -35,6 +37,7 @@ uow.commitWork();
 ```
 
 Rules:
+
 - Never place SOQL inside any loop (`for`, `while`, `do-while`)
 - Never place DML inside any loop — always use Unit of Work
 - Use `Map<Id, SObject>` for O(1) lookups instead of nested loops
@@ -50,83 +53,108 @@ Trigger → TriggerHandler → Domain → Selector (SOQL) → Service → UnitOf
 ```
 
 ### Trigger (zero logic)
+
 ```apex
-trigger AccountTrigger on Account (before insert, before update, after insert, after update) {
-    AccountTriggerHandler.run();
+trigger AccountTrigger on Account(
+  before insert,
+  before update,
+  after insert,
+  after update
+) {
+  AccountTriggerHandler.run();
 }
 ```
 
 ### TriggerHandler (delegation only)
+
+Lives in `force-app/main/default/classes/triggerhandlers/`. Delegates to the
+domain via its `Constructor` inner class — fflib instantiates the domain through
+the `IConstructable` constructor, not the domain type directly.
+
 ```apex
 public with sharing class AccountTriggerHandler {
-    public static void run() {
-        fflib_SObjectDomain.triggerHandler(AccountDomain.class);
-    }
+  public static void run() {
+    fflib_SObjectDomain.triggerHandler(AccountDomain.Constructor.class);
+  }
 }
 ```
 
 ### Domain (SObject-specific validation and rules)
+
 ```apex
 public with sharing class AccountDomain extends fflib_SObjectDomain {
-    public AccountDomain(List<Account> records) { super(records); }
+  public AccountDomain(List<Account> records) {
+    super(records);
+  }
 
-    public class Constructor implements fflib_SObjectDomain.IConstructable {
-        public fflib_SObjectDomain construct(List<SObject> records) {
-            return new AccountDomain(records);
-        }
+  public class Constructor implements fflib_SObjectDomain.IConstructable {
+    public fflib_SObjectDomain construct(List<SObject> records) {
+      return new AccountDomain(records);
     }
+  }
 
-    public override void onBeforeInsert() {
-        validateRequiredFields((List<Account>) Records);
-    }
+  public override void onBeforeInsert() {
+    validateRequiredFields((List<Account>) Records);
+  }
 
-    private void validateRequiredFields(List<Account> accounts) {
-        for (Account acc : accounts) {
-            if (String.isBlank(acc.Name)) {
-                acc.addError('Account Name is required.');
-            }
-        }
+  private void validateRequiredFields(List<Account> accounts) {
+    for (Account acc : accounts) {
+      if (String.isBlank(acc.Name)) {
+        acc.addError('Account Name is required.');
+      }
     }
+  }
 }
 ```
 
 ### Selector (SOQL only — no DML, no business logic)
+
 ```apex
 public with sharing class AccountSelector extends fflib_SObjectSelector implements IAccountSelector {
-    public List<Schema.SObjectField> getSObjectFieldList() {
-        return new List<Schema.SObjectField>{ Account.Id, Account.Name, Account.Industry };
-    }
-    public Schema.SObjectType getSObjectType() { return Account.SObjectType; }
+  public List<Schema.SObjectField> getSObjectFieldList() {
+    return new List<Schema.SObjectField>{
+      Account.Id,
+      Account.Name,
+      Account.Industry
+    };
+  }
+  public Schema.SObjectType getSObjectType() {
+    return Account.SObjectType;
+  }
 
-    public List<Account> selectById(Set<Id> ids) {
-        return (List<Account>) selectSObjectsById(ids);
-        // fflib_SObjectSelector automatically adds WITH SECURITY_ENFORCED
-    }
+  public List<Account> selectById(Set<Id> ids) {
+    return (List<Account>) selectSObjectsById(ids);
+    // fflib_SObjectSelector automatically adds WITH SECURITY_ENFORCED
+  }
 
-    public List<Account> selectByIndustry(String industry) {
-        fflib_QueryFactory qf = newQueryFactory();
-        qf.setCondition('Industry = :industry');
-        return (List<Account>) Database.query(qf.toSOQL());
-    }
+  public List<Account> selectByIndustry(String industry) {
+    fflib_QueryFactory qf = newQueryFactory();
+    qf.setCondition('Industry = :industry');
+    return (List<Account>) Database.query(qf.toSOQL());
+  }
 }
 ```
 
 ### Service (orchestration — uses Domain + Selector + UoW)
+
 ```apex
 public with sharing class AccountServiceImpl implements IAccountService {
-    public void updateIndustry(Set<Id> accountIds, String newIndustry) {
-        IAccountSelector selector = (IAccountSelector) Application.Selector.newInstance(Account.SObjectType);
-        List<Account> accounts = selector.selectById(accountIds);
+  public void updateIndustry(Set<Id> accountIds, String newIndustry) {
+    IAccountSelector selector = (IAccountSelector) Application.Selector.newInstance(
+      Account.SObjectType
+    );
+    List<Account> accounts = selector.selectById(accountIds);
 
-        fflib_ISObjectUnitOfWork uow = Application.UnitOfWork.newInstance();
-        for (Account acc : accounts) {
-            acc.Industry = newIndustry;
-            uow.registerDirty(acc);
-        }
-        uow.commitWork();
-        Logger.info('Updated industry for ' + accounts.size() + ' accounts').addTag('AccountService');
-        Logger.saveLog();
+    fflib_ISObjectUnitOfWork uow = Application.UnitOfWork.newInstance();
+    for (Account acc : accounts) {
+      acc.Industry = newIndustry;
+      uow.registerDirty(acc);
     }
+    uow.commitWork();
+    Logger.info('Updated industry for ' + accounts.size() + ' accounts')
+      .addTag('AccountService');
+    Logger.saveLog();
+  }
 }
 ```
 
@@ -152,6 +180,7 @@ List<Account> accounts = (List<Account>) decision.getRecords();
 ```
 
 All classes use `with sharing` unless justified in a comment:
+
 ```apex
 public with sharing class AccountServiceImpl implements IAccountService { ... }
 // without sharing — only for specific system-context operations (e.g., platform event triggers)
@@ -187,6 +216,7 @@ Logger.saveLog();
 ```
 
 Rules:
+
 - Every public method entry point should log at info level with context
 - Every catch block must log at error level with the exception
 - `Logger.saveLog()` must be called before returning from a service method or after logging in a catch block
@@ -221,20 +251,20 @@ try {
 
 ## 6. Naming Conventions
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Domain | `{Object}Domain` | `AccountDomain` |
-| Domain interface | `I{Object}Domain` | `IAccountDomain` |
-| Selector | `{Object}Selector` | `AccountSelector` |
-| Selector interface | `I{Object}Selector` | `IAccountSelector` |
-| Service impl | `{Object}ServiceImpl` | `AccountServiceImpl` |
-| Service interface | `I{Object}Service` | `IAccountService` |
-| Trigger handler | `{Object}TriggerHandler` | `AccountTriggerHandler` |
-| Trigger | `{Object}Trigger` | `AccountTrigger` |
-| Gateway | `{Name}Gateway` | `ExternalCrmGateway` |
-| DTO | `{Object}DTO` | `AccountDTO` |
-| Test factory | `{Object}TestFactory` | `AccountTestFactory` |
-| Test class | `{Subject}Test` | `AccountServiceImplTest` |
+| Type               | Pattern                  | Example                  |
+| ------------------ | ------------------------ | ------------------------ |
+| Domain             | `{Object}Domain`         | `AccountDomain`          |
+| Domain interface   | `I{Object}Domain`        | `IAccountDomain`         |
+| Selector           | `{Object}Selector`       | `AccountSelector`        |
+| Selector interface | `I{Object}Selector`      | `IAccountSelector`       |
+| Service impl       | `{Object}ServiceImpl`    | `AccountServiceImpl`     |
+| Service interface  | `I{Object}Service`       | `IAccountService`        |
+| Trigger handler    | `{Object}TriggerHandler` | `AccountTriggerHandler`  |
+| Trigger            | `{Object}Trigger`        | `AccountTrigger`         |
+| Gateway            | `{Name}Gateway`          | `ExternalCrmGateway`     |
+| DTO                | `{Object}DTO`            | `AccountDTO`             |
+| Test factory       | `{Object}TestFactory`    | `AccountTestFactory`     |
+| Test class         | `{Subject}Test`          | `AccountServiceImplTest` |
 
 - Method names: verb-first, describe intent (`updateIndustry`, `selectByStatus`, `validateAddress`)
 - Variables: camelCase, descriptive (`accountsByIndustry`, not `map1`)
@@ -271,14 +301,14 @@ public static void syncAccountFuture(Set<Id> accountIds) { ... }
 
 ## 8. Governor Limit Awareness
 
-| Limit | Safe threshold | Action if approaching |
-|-------|---------------|----------------------|
-| SOQL queries | 50 | Consolidate selectors, use caching |
-| DML statements | 75 | All DML through UoW (1 commit = 1 statement) |
-| SOQL rows | 25,000 | Add LIMIT, paginate, use Batch |
-| Heap size | 6 MB | Process records in chunks, avoid large Lists |
-| CPU time | 8,000 ms | Move computation to async |
-| Callouts | 100 | Batch callouts in Queueable |
+| Limit          | Safe threshold | Action if approaching                        |
+| -------------- | -------------- | -------------------------------------------- |
+| SOQL queries   | 50             | Consolidate selectors, use caching           |
+| DML statements | 75             | All DML through UoW (1 commit = 1 statement) |
+| SOQL rows      | 25,000         | Add LIMIT, paginate, use Batch               |
+| Heap size      | 6 MB           | Process records in chunks, avoid large Lists |
+| CPU time       | 8,000 ms       | Move computation to async                    |
+| Callouts       | 100            | Batch callouts in Queueable                  |
 
 Always use `Limits.getQueries()` guards in Batch `execute()` if dynamically issuing SOQL.
 
@@ -287,6 +317,7 @@ Always use `Limits.getQueries()` guards in Batch `execute()` if dynamically issu
 ## 9. API Version
 
 All Apex: `apiVersion: 67.0` in meta files. Use `AccessLevel.USER_MODE` for DML when targeting API 56+:
+
 ```apex
 Database.insert(records, AccessLevel.USER_MODE);
 ```
