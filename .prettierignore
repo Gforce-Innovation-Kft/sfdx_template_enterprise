@@ -9,3 +9,9 @@
 .vscode
 
 coverage/
+# Vendored third-party skills — never reformat (must stay byte-identical to upstream)
+.agents/
+.claude/skills/
+
+# Generated knowledge graph
+graphify-out/

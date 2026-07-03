@@ -53,8 +53,8 @@ graphify-out/.graphify_analysis.json
 graphify-out/.graphify_labels.json
 graphify-out/cache/
 
-# sf-skills — reinstalled by setup.sh via npx skills add
-.agents/
+# sf-skills — vendored in .agents/skills/ (canonical) + .claude/skills/ (symlinks).
+# Update deliberately via `npx skills update` in a reviewed PR — never at setup time.
 
 # Local scratch / planning dirs
 SalesforceProject setup/

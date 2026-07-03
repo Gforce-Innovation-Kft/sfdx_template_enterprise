@@ -15,9 +15,9 @@ All layers use fflib enterprise patterns. NebulaLogger for all logging. Never `S
 
 1. Read `docs/product/PRODUCT.md` — what the system does and why
 2. Read the relevant `docs/product/requirements/REQ-*.yaml`
-3. For Apex: use the `generating-apex` sf-skill + read `.claude/references/apex-coding-rules.md`
-4. For LWC: use the `generating-lwc-components` sf-skill + read `.claude/references/lwc-coding-rules.md`
-5. For tests: use the `generating-apex-test` sf-skill + read `.claude/references/apex-patterns.md` + read `.claude/references/testing-testdatafactory.md`
+3. For Apex: use the `platform-apex-generate` sf-skill + read `.claude/references/apex-coding-rules.md`
+4. For LWC: use the `experience-lwc-generate` sf-skill + read `.claude/references/lwc-coding-rules.md`
+5. For tests: use the `platform-apex-test-generate` sf-skill + read `.claude/references/apex-patterns.md` + read `.claude/references/testing-testdatafactory.md`
 
 ## Code navigation (graphify)
 
@@ -30,9 +30,10 @@ When `graphify-out/graph.json` exists:
 
 ## Skills
 
-**sf-skills** (installed via `npx skills add forcedotcom/sf-skills`):
-`generating-apex`, `generating-apex-test`, `generating-lwc-components`,
-`running-apex-tests`, `deploying-metadata`, `running-code-analyzer`, and 75+ more.
+**sf-skills** (vendored in `.agents/skills/` + `.claude/skills/` symlinks; pinned by
+`skills-lock.json`, updated only via a reviewed `npx skills update` PR):
+`platform-apex-generate`, `platform-apex-test-generate`, `experience-lwc-generate`,
+`platform-apex-test-run`, `platform-metadata-deploy`, `dx-code-analyzer-run`, and 80+ more.
 
 **GForce custom skills:**
 
