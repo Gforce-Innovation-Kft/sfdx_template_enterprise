@@ -61,3 +61,5 @@ jobs:
 
       - name: Verify personalised repo state (no tokens remain, skills intact)
         run: npm run test:setup
+
+# NOTE: keep this file self-contained; it must run on a fresh clone with no org secrets.
