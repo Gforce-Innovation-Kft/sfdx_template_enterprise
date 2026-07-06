@@ -62,6 +62,7 @@ All classes registered in `Application.cls` (service, selector, domain, UoW).
 ## Apex Generation Checklist
 
 When generating an Apex class, verify:
+
 - [ ] `public with sharing class`
 - [ ] Implements the correct interface (`IAccountService`, `IAccountSelector`, etc.)
 - [ ] Registered in `Application.cls`
@@ -78,6 +79,7 @@ When generating an Apex class, verify:
 ## LWC Generation Checklist
 
 When generating an LWC component, verify:
+
 - [ ] Four-state template: loading / error / empty / success
 - [ ] `lwc:if/elseif/else` (not `if:true/if:false`)
 - [ ] Wire for reads, imperative for mutations
@@ -105,6 +107,7 @@ When generating an LWC component, verify:
 ## Code Navigation
 
 When `graphify-out/graph.json` exists, prefer:
+
 ```
 graphify query "how does account update work?"
 graphify path "AccountService" "AccountSelector"
@@ -122,10 +125,11 @@ npx skills add forcedotcom/sf-skills
 ```
 
 Invoke by name in your prompt:
-- `generating-apex` — generate Apex following the workflow above
-- `generating-apex-test` — generate test classes
-- `generating-lwc-components` — generate LWC components
-- `running-apex-tests` — run and analyse test results
-- `deploying-metadata` — deploy to target org
-- `running-code-analyzer` — PMD/static analysis
-- `generating-custom-object` / `generating-custom-field` — metadata generation
+
+- `platform-apex-generate` — generate Apex following the workflow above
+- `platform-apex-test-generate` — generate test classes
+- `experience-lwc-generate` — generate LWC components
+- `platform-apex-test-run` — run and analyse test results
+- `platform-metadata-deploy` — deploy to target org
+- `dx-code-analyzer-run` — PMD/static analysis
+- `platform-custom-object-generate` / `platform-custom-field-generate` — metadata generation

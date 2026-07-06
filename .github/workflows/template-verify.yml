@@ -1,0 +1,65 @@
+name: Template Verify
+
+# Guards the template contract:
+#   1. Unit + contract tests in pristine template state (tokens present,
+#      vendored skills match skills-lock.json, docs reference real skills).
+#   2. Full end-to-end setup run (non-interactive), then the same contract
+#      suite again in personalised state (zero tokens remain anywhere).
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: template-verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    name: Template contract (pristine)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install npm dependencies
+        run: npm ci --silent
+
+      - name: Run setup unit + contract tests
+        run: npm run test:setup
+
+  setup-e2e:
+    name: End-to-end setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install npm dependencies
+        run: npm ci --silent
+
+      - name: Run setup non-interactively
+        run: node setup.js --project-name acme-sf --client-name "Acme Corp" --org-alias acme-dev
+
+      - name: Verify personalised repo state (no tokens remain, skills intact)
+        run: npm run test:setup
+
+# NOTE: keep this file self-contained; it must run on a fresh clone with no org secrets.

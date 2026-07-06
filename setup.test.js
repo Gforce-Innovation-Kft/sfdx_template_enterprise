@@ -8,9 +8,11 @@ const {
   replaceTokens,
   initSubmodules,
   installNpmDeps,
-  installSfSkills,
+  verifySfSkills,
+  CUSTOM_SKILLS,
   setupGraphify,
   collectProjectInfo,
+  parseCliArgs,
   _walkFiles
 } = require("./setup.js");
 
@@ -212,22 +214,59 @@ describe("installNpmDeps", () => {
   });
 });
 
-// ── installSfSkills ───────────────────────────────────────────────────────────
+// ── verifySfSkills ────────────────────────────────────────────────────────────
 
-describe("installSfSkills", () => {
-  it("calls npx skills add when npx is available", () => {
-    const exec = jest.fn();
-    installSfSkills({ hasCommand: () => true, execSync: exec });
-    expect(exec).toHaveBeenCalledWith(
-      expect.stringContaining("npx skills add"),
-      expect.anything()
+describe("verifySfSkills", () => {
+  let tmp;
+
+  function seedSkills(names) {
+    for (const n of names) {
+      writeFile(tmp, path.join(".claude", "skills", n, "SKILL.md"), `# ${n}`);
+    }
+  }
+
+  function seedLock(names) {
+    const skills = {};
+    for (const n of names) {
+      skills[n] = { source: "forcedotcom/sf-skills", sourceType: "github" };
+    }
+    writeFile(tmp, "skills-lock.json", JSON.stringify({ version: 1, skills }));
+  }
+
+  beforeEach(() => {
+    tmp = makeTmpDir();
+  });
+  afterEach(() => {
+    rimraf(tmp);
+  });
+
+  it("passes when all locked and custom skills are present", () => {
+    seedLock(["platform-apex-generate", "experience-lwc-generate"]);
+    seedSkills([
+      "platform-apex-generate",
+      "experience-lwc-generate",
+      ...CUSTOM_SKILLS
+    ]);
+    expect(() => verifySfSkills({ root: tmp })).not.toThrow();
+  });
+
+  it("throws and names the missing skill when a locked skill is absent", () => {
+    seedLock(["platform-apex-generate", "platform-metadata-deploy"]);
+    seedSkills(["platform-apex-generate", ...CUSTOM_SKILLS]);
+    expect(() => verifySfSkills({ root: tmp })).toThrow(
+      /platform-metadata-deploy/
     );
   });
 
-  it("does not throw when npx is absent", () => {
-    expect(() =>
-      installSfSkills({ hasCommand: () => false, execSync: jest.fn() })
-    ).not.toThrow();
+  it("throws when a GForce custom skill is missing", () => {
+    seedLock(["platform-apex-generate"]);
+    seedSkills(["platform-apex-generate", "graphify", "new-requirement"]);
+    expect(() => verifySfSkills({ root: tmp })).toThrow(/salesforce-developer/);
+  });
+
+  it("throws when skills-lock.json is missing", () => {
+    seedSkills(CUSTOM_SKILLS);
+    expect(() => verifySfSkills({ root: tmp })).toThrow(/skills-lock\.json/);
   });
 });
 
@@ -341,5 +380,54 @@ describe("collectProjectInfo", () => {
     await expect(
       collectProjectInfo({ createInterface: fakeInterface(["", "", ""]) })
     ).rejects.toThrow(/required/);
+  });
+
+  it("uses CLI args without prompting when all three are provided", async () => {
+    const createInterface = jest.fn();
+    const result = await collectProjectInfo({
+      cliArgs: {
+        projectName: "acme-sf",
+        clientName: "Acme Corp",
+        orgAlias: "acme-dev"
+      },
+      createInterface
+    });
+    expect(result).toEqual({
+      projectName: "acme-sf",
+      clientName: "Acme Corp",
+      orgAlias: "acme-dev"
+    });
+    expect(createInterface).not.toHaveBeenCalled();
+  });
+
+  it("throws when CLI args are incomplete", async () => {
+    await expect(
+      collectProjectInfo({ cliArgs: { projectName: "acme-sf" } })
+    ).rejects.toThrow(/Non-interactive/);
+  });
+});
+
+// ── parseCliArgs ──────────────────────────────────────────────────────────────
+
+describe("parseCliArgs", () => {
+  it("parses the three setup flags", () => {
+    expect(
+      parseCliArgs([
+        "--project-name",
+        "acme-sf",
+        "--client-name",
+        "Acme Corp",
+        "--org-alias",
+        "acme-dev"
+      ])
+    ).toEqual({
+      projectName: "acme-sf",
+      clientName: "Acme Corp",
+      orgAlias: "acme-dev"
+    });
+  });
+
+  it("returns empty object for no args", () => {
+    expect(parseCliArgs([])).toEqual({});
   });
 });

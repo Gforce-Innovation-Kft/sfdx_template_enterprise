@@ -42,7 +42,36 @@ function run(cmd, opts = {}) {
 
 // ── Step 0: Collect project info ──────────────────────────────────────────────
 
+function parseCliArgs(argv = process.argv.slice(2)) {
+  const flags = {
+    "--project-name": "projectName",
+    "--client-name": "clientName",
+    "--org-alias": "orgAlias"
+  };
+  const out = {};
+  for (let i = 0; i < argv.length; i++) {
+    const key = flags[argv[i]];
+    if (key && argv[i + 1] !== undefined) {
+      out[key] = argv[i + 1].trim();
+      i++;
+    }
+  }
+  return out;
+}
+
 async function collectProjectInfo(deps = {}) {
+  // Non-interactive mode (CI / scripted setup):
+  //   node setup.js --project-name acme-sf --client-name "Acme Corp" --org-alias acme-dev
+  const cli = deps.cliArgs || parseCliArgs();
+  if (cli.projectName || cli.clientName || cli.orgAlias) {
+    if (!cli.projectName || !cli.clientName || !cli.orgAlias) {
+      throw new Error(
+        "Non-interactive mode requires all of --project-name, --client-name, --org-alias."
+      );
+    }
+    return cli;
+  }
+
   const createInterface =
     deps.createInterface ||
     (() =>
@@ -90,7 +119,12 @@ const INCLUDED_EXTS = new Set([
   ".html",
   ".js"
 ]);
-const EXCLUDED_FILES = new Set(["setup.js", "setup.sh"]);
+const EXCLUDED_FILES = new Set([
+  "setup.js",
+  "setup.sh",
+  "setup.test.js",
+  "setup.contract.test.js"
+]);
 
 function _walkFiles(dir, results = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -174,28 +208,47 @@ function installNpmDeps(deps = {}) {
 }
 
 // ── Step 4/6: sf-skills ───────────────────────────────────────────────────────
+//
+// Skills are vendored in the template (.agents/skills/ + .claude/skills/ symlinks)
+// so every clone gets the exact reviewed versions — nothing is downloaded here.
+// This step only VERIFIES the vendored set matches skills-lock.json and that the
+// GForce custom skills are present. A mismatch fails setup loudly.
 
-function installSfSkills(deps = {}) {
-  const _hasCommand = deps.hasCommand || hasCommand;
-  const exec = deps.execSync || ((cmd, opts) => run(cmd, opts));
+const CUSTOM_SKILLS = [
+  "graphify",
+  "new-requirement",
+  "salesforce-developer",
+  "using-nebula-logger"
+];
 
-  if (!_hasCommand("npx")) {
-    log.warn(
-      "npx not found — install Node.js then run: npx skills add forcedotcom/sf-skills"
+function verifySfSkills(deps = {}) {
+  const rootDir = deps.root || REPO_ROOT;
+  const lockPath = path.join(rootDir, "skills-lock.json");
+
+  if (!fs.existsSync(lockPath)) {
+    throw new Error("skills-lock.json not found — template is corrupt.");
+  }
+
+  const lock = JSON.parse(fs.readFileSync(lockPath, "utf8"));
+  const expected = Object.keys(lock.skills || {});
+  const missing = [];
+
+  for (const name of [...expected, ...CUSTOM_SKILLS]) {
+    const skillMd = path.join(rootDir, ".claude", "skills", name, "SKILL.md");
+    if (!fs.existsSync(skillMd)) missing.push(name);
+  }
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Vendored skills missing or broken (${missing.length}): ${missing.join(", ")}\n` +
+        "  The template repo is incomplete — re-clone it, or restore skills with:\n" +
+        "  npx skills add forcedotcom/sf-skills"
     );
-    return;
   }
 
-  log.info("Running: npx skills add forcedotcom/sf-skills");
-  try {
-    exec("npx skills add forcedotcom/sf-skills", {
-      cwd: REPO_ROOT,
-      stdio: "inherit"
-    });
-  } catch {
-    // non-fatal
-  }
-  log.success("sf-skills installed");
+  log.success(
+    `sf-skills verified — ${expected.length} vendored + ${CUSTOM_SKILLS.length} GForce custom skills present`
+  );
 }
 
 // ── Step 5/6: Graphify ────────────────────────────────────────────────────────
@@ -300,8 +353,8 @@ async function main() {
   log.header("3/6  Installing npm dependencies");
   installNpmDeps();
 
-  log.header("4/6  Installing Salesforce sf-skills");
-  installSfSkills();
+  log.header("4/6  Verifying vendored Salesforce sf-skills");
+  verifySfSkills();
 
   log.header("5/6  Setting up graphify");
   setupGraphify();
@@ -321,9 +374,9 @@ async function main() {
   6. Build full knowledge graph in Claude Code: /graphify .
 
   ${BOLD}sf-skills quick reference:${RESET}
-  'Use the generating-apex skill to create an AccountService for [requirement]'
-  'Use the generating-lwc-components skill to build [component name]'
-  'Use the running-apex-tests skill to run and analyse test results'
+  'Use the platform-apex-generate skill to create an AccountService for [requirement]'
+  'Use the experience-lwc-generate skill to build [component name]'
+  'Use the platform-apex-test-run skill to run and analyse test results'
 
   ${GREEN}${BOLD}Happy building!${RESET}
 `);
@@ -331,10 +384,12 @@ async function main() {
 
 module.exports = {
   collectProjectInfo,
+  parseCliArgs,
   replaceTokens,
   initSubmodules,
   installNpmDeps,
-  installSfSkills,
+  verifySfSkills,
+  CUSTOM_SKILLS,
   setupGraphify,
   confirmTestDataFactory,
   _walkFiles
