@@ -24,8 +24,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli --silent
@@ -49,14 +49,6 @@ jobs:
 
       - name: Push source
         run: sf project deploy start --target-org $SCRATCH_ALIAS
-
-      - name: Install TestDataFactory package
-        run: |
-          sf package install \
-            --package 04t1n000002WsK5AAK \
-            --target-org $SCRATCH_ALIAS \
-            --no-prompt \
-            --wait 10
 
       - name: Run Apex tests
         run: |

@@ -11,3 +11,7 @@ node_modules/
 libs/
 graphify-out/
 "SalesforceProject setup/"
+.agents/
+.claude/
+.husky/
+*.sh
