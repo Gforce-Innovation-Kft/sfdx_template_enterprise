@@ -450,7 +450,29 @@ public class TestDataFactory {
       List<SObject> sObjList,
       String errorMessageMergeValue
     ) {
-      Database.SaveResult[] saveResults = Database.insert(sObjList, false);
+      // DML a stripped copy of each record (fields only): records built with
+      // dot-notation defaults still carry pre-insert relationship object
+      // references, and the API rejects a record that has both a relationship
+      // reference and the corresponding lookup Id field set.
+      List<SObject> dmlList = new List<SObject>();
+      for (SObject sObj : sObjList) {
+        SObject dmlCopy = sObj.getSObjectType().newSObject();
+        Map<String, Object> populatedFields = sObj.getPopulatedFieldsAsMap();
+        for (String fieldName : populatedFields.keySet()) {
+          Object fieldValue = populatedFields.get(fieldName);
+          if (!(fieldValue instanceof SObject)) {
+            dmlCopy.put(fieldName, fieldValue);
+          }
+        }
+        dmlList.add(dmlCopy);
+      }
+      Database.SaveResult[] saveResults = Database.insert(dmlList, false);
+      // copy the generated Ids back onto the caller-visible records
+      for (Integer idx = 0; idx < saveResults.size(); idx++) {
+        if (saveResults.get(idx).isSuccess()) {
+          sObjList.get(idx).Id = saveResults.get(idx).getId();
+        }
+      }
       List<String> listErrors = new List<String>();
       // Iterate through the save results and keep the original index in sync
       for (Integer idx = 0; idx < saveResults.size(); idx++) {
