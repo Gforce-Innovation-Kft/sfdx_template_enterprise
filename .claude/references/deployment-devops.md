@@ -123,10 +123,13 @@ For more than one package, add them to a `scripts/install-packages.sh` and call 
 
 ## 9. Code Analyzer (PMD)
 
-Run the Salesforce Code Analyzer on every PR:
+Run the Salesforce Code Analyzer on every PR, using the project ruleset
+(`config/pmd-ruleset.xml` — all standard Apex categories, with naming
+conventions adjusted for given_when_then test methods and fflib PascalCase
+Application factories):
 
 ```bash
-sf scanner run --target force-app/ --format table --severity-threshold 3
+sf scanner run --target force-app/ --pmdconfig config/pmd-ruleset.xml --format table --severity-threshold 2
 ```
 
 Severity 1–2: block the PR. Severity 3: warn but allow merge with justification.

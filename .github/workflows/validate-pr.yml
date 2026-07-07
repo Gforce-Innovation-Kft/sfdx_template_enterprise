@@ -78,6 +78,7 @@ jobs:
           sf plugins install @salesforce/sfdx-scanner
           sf scanner run \
             --target force-app/ \
+            --pmdconfig config/pmd-ruleset.xml \
             --format table \
             --severity-threshold 2
 
