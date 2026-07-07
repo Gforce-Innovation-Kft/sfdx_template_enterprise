@@ -35,9 +35,9 @@ jobs:
 
       - name: Authenticate Dev Hub
         run: |
-          echo "${{ secrets.DEVHUB_AUTH_URL }}" > devhub-auth.json
-          sf org login sfdx-url --sfdx-url-file devhub-auth.json --alias devhub --set-default-dev-hub
-          rm devhub-auth.json
+          echo "${{ secrets.DEVHUB_AUTH_URL }}" > devhub-auth.txt
+          sf org login sfdx-url --sfdx-url-file devhub-auth.txt --alias devhub --set-default-dev-hub
+          rm devhub-auth.txt
 
       - name: Create scratch org
         run: |
