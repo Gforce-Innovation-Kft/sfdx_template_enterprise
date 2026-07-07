@@ -1,58 +1,95 @@
-# Salesforce DX Project
+# GForce SF Enterprise Template
 
-Salesforce DX is a development approach that brings source-driven development, team collaboration, and continuous integration to the Salesforce Platform. Instead of working directly in an org through a web browser, you work with metadata as source files in a local DX project, track changes in version control, and deploy through automated processes.
+> **This is a template repository.** Click **Use this template** on GitHub (or clone it),
+> run one setup command, and you have a production-grade Salesforce DX project with
+> enterprise patterns, CI/CD, and AI pair-programming pre-wired.
 
-This project template gets you started with the tools and structure you need to build Salesforce applications using source control, scratch orgs, and the Salesforce CLI.
+Reusable Salesforce DX scaffold for GForce Innovation client engagements.
+
+## What you get
+
+- **fflib enterprise patterns** — Application factory, Domain / Selector / Service / Unit of Work layers (fflib-apex-common + fflib-apex-mocks as git submodules)
+- **NebulaLogger** — structured logging everywhere, `System.debug` banned by convention and PMD
+- **AI pair-programming, ready on clone** — `CLAUDE.md` conventions, 89 vendored [sf-skills](https://github.com/forcedotcom/sf-skills) pinned by `skills-lock.json`, GForce custom skills, coding-rule references in `.claude/references/`, and a graphify knowledge graph
+- **CI/CD** — scratch-org PR validation, staging auto-deploy, production deploy with manual approval, and a template self-verification workflow
+- **Worked reference feature** — FX Invoice Conversion (`Invoice__c`, trigger → handler → domain → selector → service → UoW → gateway, LWC, tests). It demonstrates every layer end-to-end; strip or replace it once your real requirements land. See `docs/product/PRODUCT.md`.
+- **Test scaffolding** — TestDataFactory (source-tracked, no package install), Jest for LWC, contract tests that keep the template itself honest
+
+```
+Trigger → TriggerHandler → Domain → Selector → Service → UnitOfWork → Gateway → Logger
+```
 
 ## Prerequisites
 
-Before you start, make sure you have:
+- **Salesforce CLI** — [install guide](https://developer.salesforce.com/tools/salesforcecli)
+- **Node.js 20+** and npm
+- **git** (submodules are used for fflib and NebulaLogger)
+- **A Dev Hub** for scratch orgs — enable under Setup → Dev Hub in your production/developer org
 
-- **Salesforce CLI** - Download from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). See [Install Salesforce CLI](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli.htm) for details.
-- **VS Code with Salesforce Extension Pack** - See [Installation Instructions](https://developer.salesforce.com/docs/platform/sfvscode-extensions/guide/install.html) for details. Includes the Agentforce Vibes extension.
-- **A development org** - Sign up for a free Developer Edition org [here](https://developer.salesforce.com/signup).
-- **Dev Hub enabled** (optional, required to create scratch orgs) - You can enable Dev Hub in your development org under Setup > Dev Hub.  See [Provide Developers Access to Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_dx_tools.htm).
+## Getting started
 
-## Project Structure
+```bash
+# 1. Create your repo from this template (GitHub "Use this template" button), then:
+git clone --recurse-submodules <your-new-repo-url> my-project
+cd my-project
 
-Your DX project follows this structure:
+# 2. Personalise + install everything (interactive):
+node setup.js
 
-- **`force-app/main/default/`** - Your metadata source files live in this default package directory. You can configure additional package directories in the `sfdx-project.json` file.
-- **`config/`** - Scratch org definitions and project settings
-- **`scripts/`** - Automation scripts for common tasks
-- **`sfdx-project.json`** - Project manifest that defines package directories, namespace, API version, and other project-level settings
+#    …or non-interactive (CI / scripted):
+node setup.js --project-name acme-sf --client-name "Acme Corp" --org-alias acme-dev
 
-See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm).
+# 3. Authenticate and create a scratch org:
+sf org login web --alias devhub --set-default-dev-hub
+./scripts/create-scratch-org.sh
 
-## Get Started
+# 4. Deploy and test:
+sf project deploy start
+sf apex run test --test-level RunLocalTests
+```
 
-Ready to start developing? The [Get Started with Salesforce DX](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_get_started_dx.htm) guide walks you through your first project, from creating a scratch org to creating a simple Apex class or LWC to deploying your code to a sandbox.
+`setup.js` replaces the `{{PROJECT_NAME}}` / `{{CLIENT_NAME}}` / `{{ORG_ALIAS}}` tokens across the project, initialises submodules, installs npm dependencies, verifies the vendored sf-skills against `skills-lock.json`, and sets up the graphify knowledge graph. It is idempotent and fails loudly if the template is incomplete.
 
-## Common Salesforce CLI Commands
+## Everyday commands
 
-Here are common CLI commands that you'll use the most:
+| Command                | What it does                            |
+| ---------------------- | --------------------------------------- |
+| `npm run test:unit`    | LWC Jest tests                          |
+| `npm run test:setup`   | Template setup + contract tests         |
+| `npm run lint`         | ESLint (aura/lwc)                       |
+| `npm run prettier`     | Format all sources (Apex, LWC, XML, MD) |
+| `scripts/run-tests.sh` | Apex tests against the default org      |
+| `scripts/deploy.sh`    | Deploy source to the default org        |
 
-- `sf org login web`: Authorize an org
-- `sf org open`: Open your org in a browser
-- `sf org create scratch`: Create a scratch org
-- `sf project deploy start`: Deploy metadata to your org
-- `sf project retrieve start`: Retrieve metadata from your org
-- `sf template generate <artifact>`: Scaffold new components, such as Apex classes and triggers, LWC components, Lightning apps, and more
-- `sf apex <command>`: Run Apex tests, run anonymous Apex blocks, and view logs
-- `sf data <command>`: Work with test data
-- `sf alias <command>`: Manage org aliases
-- `sf config <command>`: Configure CLI settings
+## CI/CD and required secrets
 
-## Use Agentforce Vibes to Build Lightning Apps
+Workflows live in `.github/workflows/`. `Template Verify` needs **no secrets**; the other three need org auth URLs added under **Settings → Secrets and variables → Actions**:
 
-Transform your ideas into custom Lightning apps that extend CRM workflows directly in Lightning Experience. Through natural conversations with Agentforce Vibes, implement custom objects and fields, complex business logic, and dynamic UI components. See [Build a Lightning App Using Agentforce Vibes](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/lexapp-overview.html).
+| Secret                | Used by                 | How to generate                                                                      |
+| --------------------- | ----------------------- | ------------------------------------------------------------------------------------ |
+| `DEVHUB_AUTH_URL`     | `validate-pr.yml`       | `sf org display --target-org devhub --verbose --json \| jq -r '.result.sfdxAuthUrl'` |
+| `STAGING_AUTH_URL`    | `deploy-staging.yml`    | same, with `--target-org staging`                                                    |
+| `PRODUCTION_AUTH_URL` | `deploy-production.yml` | same, with `--target-org production`                                                 |
 
-## Additional Resources
+Also add GitHub **environment protection** named `production` (manual approval) for production deploys. Branch model and quality gates are documented in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-- [Agentforce Vibes Developer Guide](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/einstein-overview.html)
-- [Salesforce CLI Installation Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/)
-- [Salesforce CLI Plugin Development Guide](https://developer.salesforce.com/docs/platform/salesforce-cli-plugin/guide/conceptual-overview.html)
-- [Salesforce VS Code Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
+## Working with AI (Claude Code)
 
+Open the repo in Claude Code and it picks up `CLAUDE.md`, the vendored skills, and the reference files automatically. Start with:
+
+- _"Use the new-requirement skill to create a requirement for …"_ — generates `docs/product/requirements/REQ-NNN.yaml`
+- _"Use the platform-apex-generate skill to implement REQ-002"_
+- _"Use the platform-apex-test-run skill to run and analyse tests"_
+
+## Project structure
+
+- `force-app/main/default/` — application source (contains the FX Invoice reference feature)
+- `libs/` — fflib-apex-common, fflib-apex-mocks, NebulaLogger (git submodules)
+- `config/scratch-orgs/` — scratch org definitions (dev / ci / full)
+- `docs/product/` — product context + `requirements/REQ-*.yaml`
+- `.claude/` — AI conventions, references, vendored skills
+- `scripts/` — scratch org / deploy / test helpers
+
+## License
+
+Proprietary — © Gforce Innovation Kft. See [LICENSE](LICENSE).

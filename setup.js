@@ -171,6 +171,31 @@ function replaceTokens(
   log.success(`Tokens replaced in ${count} file(s)`);
 }
 
+// ── Step 1b: package.json personalisation ────────────────────────────────────
+//
+// Done as a JSON-safe update rather than via tokens: a literal {{PROJECT_NAME}}
+// in package.json "name" would be an invalid npm name and break `npm ci` on the
+// pristine template.
+
+const TEMPLATE_PACKAGE_NAME = "gforce-sf-enterprise-template";
+
+function toKebabCase(s) {
+  return s
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function personalizePackageJson({ projectName, clientName }, root = REPO_ROOT) {
+  const pkgPath = path.join(root, "package.json");
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+  pkg.name = toKebabCase(projectName);
+  pkg.description = `${clientName} Salesforce project`;
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+  log.success(`package.json personalised (name: ${pkg.name})`);
+}
+
 // ── Step 2/6: Git submodules ──────────────────────────────────────────────────
 
 function initSubmodules(deps = {}) {
@@ -346,6 +371,7 @@ async function main() {
 
   log.header("1/6  Personalising template files");
   replaceTokens(names);
+  personalizePackageJson(names);
 
   log.header("2/6  Initialising git submodules");
   initSubmodules();
@@ -386,6 +412,9 @@ module.exports = {
   collectProjectInfo,
   parseCliArgs,
   replaceTokens,
+  personalizePackageJson,
+  toKebabCase,
+  TEMPLATE_PACKAGE_NAME,
   initSubmodules,
   installNpmDeps,
   verifySfSkills,

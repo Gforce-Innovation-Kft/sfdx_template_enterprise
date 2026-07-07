@@ -71,28 +71,34 @@ public class TestDataFactory_Test {
   }
   @isTest
   static void createSObjectTest4() {
-    BusinessHours caseBusinessHours = [
-      SELECT Id
-      FROM BusinessHours
-      WHERE IsDefault = TRUE
-      LIMIT 1
-    ];
+    Map<String, Object> fieldValues = new Map<String, Object>{
+      'Id' => null,
+      'id' => null,
+      'aCCount.Description' => 'test',
+      'ConTact.FirstName' => 'test',
+      'Description' => 'test',
+      'asset.accounT.Name' => 'test',
+      'asset.contact.account.Description' => 'test',
+      'asset.Parent.contact.account.Description' => TestDataFactory.DEFAULT_VALUE
+    };
+    // BusinessHoursId only exists on Case when the org has the related
+    // feature enabled — include it only when it is actually writable.
+    Schema.SObjectField businessHoursField = Schema.SObjectType.Case.fields.getMap()
+      .get('BusinessHoursId');
+    if (
+      businessHoursField != null &&
+      businessHoursField.getDescribe().isCreateable()
+    ) {
+      BusinessHours caseBusinessHours = [
+        SELECT Id
+        FROM BusinessHours
+        WHERE IsDefault = TRUE
+        LIMIT 1
+      ];
+      fieldValues.put('BusinessHoursId', caseBusinessHours.Id);
+    }
     Test.startTest();
-    TestDataFactory.createSObject(
-      'Case',
-      new Map<String, Object>{
-        'Id' => null,
-        'id' => null,
-        'BusinessHoursId' => caseBusinessHours.Id,
-        'aCCount.Description' => 'test',
-        'ConTact.FirstName' => 'test',
-        'Description' => 'test',
-        'asset.accounT.Name' => 'test',
-        'asset.contact.account.Description' => 'test',
-        'asset.Parent.contact.account.Description' => TestDataFactory.DEFAULT_VALUE
-      },
-      true
-    );
+    TestDataFactory.createSObject('Case', fieldValues, true);
     Test.stopTest();
     Case cse = [
       SELECT

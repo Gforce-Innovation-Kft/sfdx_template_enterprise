@@ -1,0 +1,19 @@
+Copyright (c) 2026 Gforce Innovation Kft. All rights reserved.
+
+This template and its contents are proprietary to Gforce Innovation Kft.
+
+Use of this template is permitted solely for projects delivered by or in
+cooperation with Gforce Innovation Kft, including client projects
+bootstrapped from it during an engagement. Projects created from this
+template belong to their respective clients under the terms of the
+applicable engagement agreement.
+
+Redistribution of the template itself, in whole or in part, outside such
+engagements is not permitted without prior written consent from
+Gforce Innovation Kft (gforceinnovation@gmail.com).
+
+Third-party components included as git submodules or vendored files
+(fflib-apex-common, fflib-apex-mocks, NebulaLogger, forcedotcom/sf-skills,
+TestDataFactory) remain under their own licenses.
+
+THE TEMPLATE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.

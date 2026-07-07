@@ -18,7 +18,11 @@
 const fs = require("fs");
 const path = require("path");
 
-const { CUSTOM_SKILLS, _walkFiles } = require("./setup.js");
+const {
+  CUSTOM_SKILLS,
+  TEMPLATE_PACKAGE_NAME,
+  _walkFiles
+} = require("./setup.js");
 
 const ROOT = __dirname;
 const read = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
@@ -162,9 +166,74 @@ describe("repo shape", () => {
     "scripts/run-tests.sh",
     "config/scratch-orgs/dev.json",
     ".claude/settings.json",
-    "force-app"
+    "force-app",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    ".github/CODEOWNERS",
+    ".editorconfig"
   ])("%s exists", (p) => {
     expect(exists(p)).toBe(true);
+  });
+});
+
+// ── 4b. README documents the template contract ────────────────────────────────
+
+describe("README contract", () => {
+  const readme = read("README.md");
+
+  it("explains this is a template and how to run setup", () => {
+    expect(readme.toLowerCase()).toContain("template");
+    expect(readme).toContain("setup.js");
+    expect(readme).toContain("--project-name");
+  });
+
+  it("documents every CI secret the workflows reference", () => {
+    const workflowDir = path.join(ROOT, ".github", "workflows");
+    const secrets = new Set();
+    for (const f of fs.readdirSync(workflowDir)) {
+      const text = read(path.join(".github", "workflows", f));
+      for (const m of text.matchAll(/secrets\.([A-Z0-9_]+)/g)) {
+        secrets.add(m[1]);
+      }
+    }
+    expect(secrets.size).toBeGreaterThan(0);
+    const undocumented = [...secrets].filter((s) => !readme.includes(s));
+    expect(undocumented).toEqual([]);
+  });
+});
+
+// ── 4c. No personal or org-specific leaks ─────────────────────────────────────
+
+describe("no leaks", () => {
+  it("no personal author name in tracked template files", () => {
+    // Only git-tracked files ship with the template — local caches and
+    // developer-specific settings are irrelevant here. Names are built
+    // dynamically so this test file never matches itself.
+    const { execSync } = require("child_process");
+    const personal = ["demeter" + "gabor", "gambe" + "94"];
+    const tracked = execSync("git ls-files", { cwd: ROOT, encoding: "utf8" })
+      .split("\n")
+      .filter(Boolean)
+      .filter((f) => !f.startsWith(".agents/"))
+      .filter((f) => f !== path.posix.join(".github", "CODEOWNERS"));
+    const dirty = tracked.filter((f) => {
+      const full = path.join(ROOT, f);
+      if (!fs.existsSync(full) || fs.statSync(full).isDirectory()) return false;
+      const text = fs.readFileSync(full, "utf8").toLowerCase();
+      return personal.some((p) => text.includes(p));
+    });
+    expect(dirty).toEqual([]);
+  });
+
+  it("no hardcoded package IDs in workflows", () => {
+    const workflowDir = path.join(ROOT, ".github", "workflows");
+    for (const f of fs.readdirSync(workflowDir)) {
+      const text = read(path.join(".github", "workflows", f));
+      expect({ file: f, ids: text.match(/04t[a-zA-Z0-9]{12,15}/g) }).toEqual({
+        file: f,
+        ids: null
+      });
+    }
   });
 });
 
@@ -186,12 +255,19 @@ describe("template tokens", () => {
       if (isTemplateMode) {
         expect(read("sfdx-project.json")).toContain(TOKENS[0]);
         expect(read("config/scratch-orgs/dev.json")).toContain(TOKENS[0]);
+        expect(read("config/project-scratch-def.json")).toContain(TOKENS[0]);
+        expect(JSON.parse(read("package.json")).name).toBe(
+          TEMPLATE_PACKAGE_NAME
+        );
       } else {
         const dirty = _walkFiles(ROOT).filter((f) => {
           const text = fs.readFileSync(f, "utf8");
           return TOKENS.some((t) => text.includes(t));
         });
         expect(dirty).toEqual([]);
+        expect(JSON.parse(read("package.json")).name).not.toBe(
+          TEMPLATE_PACKAGE_NAME
+        );
       }
     }
   );

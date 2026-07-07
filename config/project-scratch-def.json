@@ -1,5 +1,5 @@
 {
-  "orgName": "demetergabor company",
+  "orgName": "{{PROJECT_NAME}} Dev",
   "edition": "Developer",
   "features": ["EnableSetPasswordInApi"],
   "settings": {

@@ -6,6 +6,8 @@ const os = require("os");
 
 const {
   replaceTokens,
+  personalizePackageJson,
+  toKebabCase,
   initSubmodules,
   installNpmDeps,
   verifySfSkills,
@@ -118,6 +120,50 @@ describe("replaceTokens", () => {
     replaceTokens({ projectName: "Zap", clientName: "C", orgAlias: "o" }, tmp);
 
     expect(readFile(tmp, "multi.md")).toBe("Zap Zap Zap");
+  });
+});
+
+// ── personalizePackageJson ────────────────────────────────────────────────────
+
+describe("personalizePackageJson", () => {
+  let tmp;
+  beforeEach(() => {
+    tmp = makeTmpDir();
+  });
+  afterEach(() => {
+    rimraf(tmp);
+  });
+
+  it("sets kebab-cased name and client description", () => {
+    writeFile(
+      tmp,
+      "package.json",
+      JSON.stringify({
+        name: "gforce-sf-enterprise-template",
+        version: "1.0.0"
+      })
+    );
+
+    personalizePackageJson(
+      { projectName: "Acme SF Project", clientName: "Acme Corp" },
+      tmp
+    );
+
+    const pkg = JSON.parse(readFile(tmp, "package.json"));
+    expect(pkg.name).toBe("acme-sf-project");
+    expect(pkg.description).toBe("Acme Corp Salesforce project");
+    expect(pkg.version).toBe("1.0.0");
+  });
+});
+
+describe("toKebabCase", () => {
+  it.each([
+    ["Acme SF", "acme-sf"],
+    ["  acme_sf  ", "acme-sf"],
+    ["ACME!! Corp 2", "acme-corp-2"],
+    ["already-kebab", "already-kebab"]
+  ])("%s -> %s", (input, expected) => {
+    expect(toKebabCase(input)).toBe(expected);
   });
 });
 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ruleset
+  name="GForce Apex Rules"
+  xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd"
+>
+  <description>
+    All standard PMD Apex categories, with naming conventions adjusted to
+    GForce style: given_when_then test method names and CONSTANT_CASE final
+    fields (inner classes cannot declare static, so semantic constants there
+    are declared as instance finals).
+  </description>
+
+  <rule ref="category/apex/bestpractices.xml" />
+  <rule ref="category/apex/codestyle.xml">
+    <exclude name="MethodNamingConventions" />
+    <exclude name="FieldNamingConventions" />
+  </rule>
+  <rule ref="category/apex/design.xml" />
+  <rule ref="category/apex/documentation.xml" />
+  <rule ref="category/apex/errorprone.xml" />
+  <rule ref="category/apex/performance.xml" />
+  <rule ref="category/apex/security.xml" />
+
+  <rule ref="category/apex/codestyle.xml/MethodNamingConventions">
+    <properties>
+      <property name="testPattern" value="[a-z][a-zA-Z0-9_]*" />
+    </properties>
+  </rule>
+  <rule ref="category/apex/codestyle.xml/FieldNamingConventions">
+    <properties>
+      <property name="finalPattern" value="[a-z][a-zA-Z0-9]*|[A-Z][A-Z0-9_]*" />
+      <!-- fflib Application factories are canonically PascalCase
+           (Application.Service, .Selector, .Domain, .UnitOfWork) -->
+      <property
+        name="constantPattern"
+        value="[A-Z][A-Z0-9_]*|[A-Z][a-zA-Z0-9]*"
+      />
+    </properties>
+  </rule>
+</ruleset>

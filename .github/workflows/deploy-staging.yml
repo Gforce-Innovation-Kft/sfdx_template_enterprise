@@ -17,17 +17,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli --silent
 
       - name: Authenticate staging org
         run: |
-          echo "${{ secrets.STAGING_AUTH_URL }}" > staging-auth.json
-          sf org login sfdx-url --sfdx-url-file staging-auth.json --alias staging
-          rm staging-auth.json
+          echo "${{ secrets.STAGING_AUTH_URL }}" > staging-auth.txt
+          sf org login sfdx-url --sfdx-url-file staging-auth.txt --alias staging
+          rm staging-auth.txt
 
       - name: Deploy source
         run: sf project deploy start --target-org staging

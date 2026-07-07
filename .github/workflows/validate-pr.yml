@@ -24,8 +24,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli --silent
@@ -35,9 +35,9 @@ jobs:
 
       - name: Authenticate Dev Hub
         run: |
-          echo "${{ secrets.DEVHUB_AUTH_URL }}" > devhub-auth.json
-          sf org login sfdx-url --sfdx-url-file devhub-auth.json --alias devhub --set-default-dev-hub
-          rm devhub-auth.json
+          echo "${{ secrets.DEVHUB_AUTH_URL }}" > devhub-auth.txt
+          sf org login sfdx-url --sfdx-url-file devhub-auth.txt --alias devhub --set-default-dev-hub
+          rm devhub-auth.txt
 
       - name: Create scratch org
         run: |
@@ -50,13 +50,12 @@ jobs:
       - name: Push source
         run: sf project deploy start --target-org $SCRATCH_ALIAS
 
-      - name: Install TestDataFactory package
+      - name: Assign permission sets
         run: |
-          sf package install \
-            --package 04t1n000002WsK5AAK \
-            --target-org $SCRATCH_ALIAS \
-            --no-prompt \
-            --wait 10
+          for ps in force-app/main/default/permissionsets/*.permissionset-meta.xml; do
+            [ -e "$ps" ] || continue
+            sf org assign permset --name "$(basename "$ps" .permissionset-meta.xml)" --target-org $SCRATCH_ALIAS
+          done
 
       - name: Run Apex tests
         run: |
@@ -79,6 +78,7 @@ jobs:
           sf plugins install @salesforce/sfdx-scanner
           sf scanner run \
             --target force-app/ \
+            --pmdconfig config/pmd-ruleset.xml \
             --format table \
             --severity-threshold 2
 
