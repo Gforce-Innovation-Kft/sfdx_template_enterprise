@@ -78,3 +78,110 @@ Rules:
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+
+<!-- skills-tooling -->
+
+## Skills & AI tooling
+
+**External skills** (lockfile-managed — update with `npx skills check` / `npx skills update`):
+
+- `agentforce-architecture-analyze` — from forcedotcom/sf-skills
+- `agentforce-d360-analyze` — from forcedotcom/sf-skills
+- `agentforce-generate` — from forcedotcom/sf-skills
+- `agentforce-observe` — from forcedotcom/sf-skills
+- `agentforce-test` — from forcedotcom/sf-skills
+- `automation-flow-generate` — from forcedotcom/sf-skills
+- `commerce-b2b-open-code-components-integrate` — from forcedotcom/sf-skills
+- `commerce-b2b-open-code-components-replace` — from forcedotcom/sf-skills
+- `commerce-b2b-store-create` — from forcedotcom/sf-skills
+- `data360-activate` — from forcedotcom/sf-skills
+- `data360-code-extension-generate` — from forcedotcom/sf-skills
+- `data360-connect` — from forcedotcom/sf-skills
+- `data360-harmonize` — from forcedotcom/sf-skills
+- `data360-orchestrate` — from forcedotcom/sf-skills
+- `data360-prepare` — from forcedotcom/sf-skills
+- `data360-query` — from forcedotcom/sf-skills
+- `data360-schema-get` — from forcedotcom/sf-skills
+- `data360-segment` — from forcedotcom/sf-skills
+- `design-systems-slds-apply` — from forcedotcom/sf-skills
+- `design-systems-slds-validate` — from forcedotcom/sf-skills
+- `design-systems-slds2-migrate` — from forcedotcom/sf-skills
+- `dx-app-analytics-query` — from forcedotcom/sf-skills
+- `dx-code-analyzer-configure` — from forcedotcom/sf-skills
+- `dx-code-analyzer-custom-rule-create` — from forcedotcom/sf-skills
+- `dx-code-analyzer-run` — from forcedotcom/sf-skills
+- `dx-devops-test-failures-analyze` — from forcedotcom/sf-skills
+- `dx-devops-test-pipeline-configure` — from forcedotcom/sf-skills
+- `dx-devops-test-suite-assignments-configure` — from forcedotcom/sf-skills
+- `dx-devops-test-suite-run` — from forcedotcom/sf-skills
+- `dx-org-manage` — from forcedotcom/sf-skills
+- `dx-org-permission-set-assign` — from forcedotcom/sf-skills
+- `dx-org-switch` — from forcedotcom/sf-skills
+- `experience-cms-brand-apply` — from forcedotcom/sf-skills
+- `experience-content-media-search` — from forcedotcom/sf-skills
+- `experience-lwc-generate` — from forcedotcom/sf-skills
+- `experience-ui-bundle-agentforce-client-generate` — from forcedotcom/sf-skills
+- `experience-ui-bundle-app-coordinate` — from forcedotcom/sf-skills
+- `experience-ui-bundle-custom-app-generate` — from forcedotcom/sf-skills
+- `experience-ui-bundle-deploy` — from forcedotcom/sf-skills
+- `experience-ui-bundle-features-generate` — from forcedotcom/sf-skills
+- `experience-ui-bundle-file-upload-generate` — from forcedotcom/sf-skills
+- `experience-ui-bundle-frontend-generate` — from forcedotcom/sf-skills
+- `experience-ui-bundle-metadata-generate` — from forcedotcom/sf-skills
+- `experience-ui-bundle-salesforce-data-access` — from forcedotcom/sf-skills
+- `experience-ui-bundle-site-generate` — from forcedotcom/sf-skills
+- `external-diagram-mermaid-generate` — from forcedotcom/sf-skills
+- `external-diagram-visual-generate` — from forcedotcom/sf-skills
+- `integration-connectivity-connected-app-configure` — from forcedotcom/sf-skills
+- `integration-connectivity-generate` — from forcedotcom/sf-skills
+- `integration-eventing-cdc-configure` — from forcedotcom/sf-skills
+- `integration-eventing-subscription-configure` — from forcedotcom/sf-skills
+- `mobile-apps-create` — from forcedotcom/sf-skills
+- `mobile-platform-native-capabilities-integrate` — from forcedotcom/sf-skills
+- `mobile-platform-offline-validate` — from forcedotcom/sf-skills
+- `omnistudio-callable-apex-generate` — from forcedotcom/sf-skills
+- `omnistudio-datamapper-generate` — from forcedotcom/sf-skills
+- `omnistudio-datapacks-deploy` — from forcedotcom/sf-skills
+- `omnistudio-dependencies-analyze` — from forcedotcom/sf-skills
+- `omnistudio-epc-catalog-generate` — from forcedotcom/sf-skills
+- `omnistudio-flexcard-generate` — from forcedotcom/sf-skills
+- `omnistudio-integration-procedure-generate` — from forcedotcom/sf-skills
+- `omnistudio-omniscript-generate` — from forcedotcom/sf-skills
+- `platform-agentexchange-partner-offers-configure` — from forcedotcom/sf-skills
+- `platform-agentsetup-categories-fetch` — from forcedotcom/sf-skills
+- `platform-apex-generate` — from forcedotcom/sf-skills
+- `platform-apex-logs-debug` — from forcedotcom/sf-skills
+- `platform-apex-test-generate` — from forcedotcom/sf-skills
+- `platform-apex-test-run` — from forcedotcom/sf-skills
+- `platform-custom-application-generate` — from forcedotcom/sf-skills
+- `platform-custom-field-generate` — from forcedotcom/sf-skills
+- `platform-custom-lightning-type-generate` — from forcedotcom/sf-skills
+- `platform-custom-object-generate` — from forcedotcom/sf-skills
+- `platform-custom-tab-generate` — from forcedotcom/sf-skills
+- `platform-data-manage` — from forcedotcom/sf-skills
+- `platform-docs-get` — from forcedotcom/sf-skills
+- `platform-flexipage-generate` — from forcedotcom/sf-skills
+- `platform-lightning-app-coordinate` — from forcedotcom/sf-skills
+- `platform-list-view-generate` — from forcedotcom/sf-skills
+- `platform-metadata-api-context-get` — from forcedotcom/sf-skills
+- `platform-metadata-deploy` — from forcedotcom/sf-skills
+- `platform-metadata-retrieve` — from forcedotcom/sf-skills
+- `platform-permission-set-generate` — from forcedotcom/sf-skills
+- `platform-sharing-rules-generate` — from forcedotcom/sf-skills
+- `platform-soql-query` — from forcedotcom/sf-skills
+- `platform-tracing-agentforce-configure` — from forcedotcom/sf-skills
+- `platform-tracing-configure` — from forcedotcom/sf-skills
+- `platform-trust-archive-manage` — from forcedotcom/sf-skills
+- `platform-validation-rule-generate` — from forcedotcom/sf-skills
+- `platform-value-set-generate` — from forcedotcom/sf-skills
+
+**Local skills** (hand-written, repo-specific):
+
+- `graphify`
+- `new-requirement`
+- `salesforce-developer`
+- `using-nebula-logger`
+
+**Global tooling available in every session:** lean-ctx (prefer `ctx_*` MCP tools for reads/search/shell — token-compressed), superpowers process skills, and graphify (knowledge graph present — use `graphify query`).
+
+<!-- /skills-tooling -->
