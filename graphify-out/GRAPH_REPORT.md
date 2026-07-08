@@ -1,7 +1,7 @@
-# Graph Report - sfdx_template_enterprise  (2026-07-06)
+# Graph Report - sfdx_template_enterprise  (2026-07-08)
 
 ## Corpus Check
-- 31 files · ~17,351 words
+- 31 files · ~17,535 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `afcd6502`
+- Built from commit: `1c24b347`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

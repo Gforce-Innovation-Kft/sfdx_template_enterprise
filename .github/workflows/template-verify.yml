@@ -10,11 +10,9 @@ on:
   pull_request:
     branches:
       - main
-      - develop
   push:
     branches:
       - main
-      - develop
 
 concurrency:
   group: template-verify-${{ github.ref }}
