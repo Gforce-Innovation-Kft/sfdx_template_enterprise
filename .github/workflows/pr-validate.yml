@@ -11,13 +11,9 @@ concurrency:
 
 permissions:
   contents: read
-  pull-requests: write
-  actions: read
 
 jobs:
   validate:
-    uses: Gforce-Innovation-Kft/shared-github-actions/.github/workflows/sf-validate.yml@v1
-    with:
-      scratch-org-validation: true
+    uses: Gforce-Innovation-Kft/shared-github-actions/.github/workflows/sf-pr-validate.yml@v1
     secrets:
       sfdx-auth-url: ${{ secrets.DEVHUB_AUTH_URL }}
