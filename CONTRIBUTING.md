@@ -6,22 +6,24 @@ Full details live in `.claude/references/deployment-devops.md`.
 ## Branch model (trunk-based)
 
 ```
-main          ← protected by ruleset; every merge deploys via the production gate
+main          ← protected by ruleset; every merge deploys via the devhub gate
   └── feature/REQ-001-short-description   ← short-lived, per-ticket
   └── hotfix/critical-bug-fix             ← same flow, expedited review
 ```
 
 Branch names: `feature/REQ-NNN-…`, `bugfix/REQ-NNN-…`, `hotfix/…`, `chore/…` —
 always reference the REQ number when one exists. No long-lived `develop`
-branch; additional environments are extra gated jobs in `deploy.yml`, not
+branch; additional environments are extra gated jobs in `release.yml`, not
 extra branches (see [docs/CICD.md](docs/CICD.md)).
 
 ## Pull requests
 
 Every PR must:
 
-- Pass CI (`pr-validate.yml` → shared `sf-validate.yml@v1`: delta check-only
-  deploy with tests + scratch-org validation + Code Analyzer)
+- Pass CI: `pr-validate.yml` → shared `sf-pr-validate.yml@v1` (`jest` +
+  scratch-org deploy/test), and `release.yml` → shared `sf-release.yml@v1`
+  (`validate`: delta check-only deploy with selected Apex tests against the
+  Dev Hub)
 - Be up to date with `main` before merge (ruleset-enforced — keeps the
   validated deploy request identical to what merges, enabling quick deploy)
 - Complete the `PULL_REQUEST_TEMPLATE.md` checklist
@@ -35,16 +37,16 @@ quick-deploy lookup).
 
 ## Quality gates
 
-| Gate                        | Trigger            | Must pass                  |
-| --------------------------- | ------------------ | -------------------------- |
-| Lint + Prettier             | Pre-commit (Husky) | Yes                        |
-| Delta check-only deploy     | PR to main         | Yes                        |
-| Apex tests (scratch org)    | PR to main         | Yes (≥ 85% coverage)       |
-| Code Analyzer (PMD)         | PR to main         | Severity 1–2 = block       |
-| Template contract tests     | PR to main         | Yes (`npm run test:setup`) |
-| Branch up to date with main | PR merge (ruleset) | Yes                        |
-| Manual review               | PR to main         | ≥ 1 approval (CODEOWNERS)  |
-| Manual approval             | Deploy             | GitHub `production` env    |
+| Gate                                 | Trigger            | Must pass                  |
+| ------------------------------------ | ------------------ | -------------------------- |
+| Lint + Prettier                      | Pre-commit (Husky) | Yes                        |
+| `jest`                               | PR to main         | Yes                        |
+| Delta check-only deploy (`validate`) | PR to main         | Yes                        |
+| Apex tests (`scratch-org`)           | PR to main         | Yes (≥ 85% coverage)       |
+| Template contract tests              | PR to main         | Yes (`npm run test:setup`) |
+| Branch up to date with main          | PR merge (ruleset) | Yes                        |
+| Manual review                        | PR to main         | ≥ 1 approval (CODEOWNERS)  |
+| Manual approval                      | Deploy             | GitHub `devhub` env        |
 
 ## Hard rules for code
 
