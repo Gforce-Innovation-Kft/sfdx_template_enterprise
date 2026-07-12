@@ -15,5 +15,8 @@ permissions:
 jobs:
   validate:
     uses: Gforce-Innovation-Kft/shared-github-actions/.github/workflows/sf-pr-validate.yml@v1
+    with:
+      # Temporary until gforceinnovation/sf-ci is published on Docker Hub
+      container-image: gforceinnovation/sf-devcontainer:latest
     secrets:
       sfdx-auth-url: ${{ secrets.DEVHUB_AUTH_URL }}

@@ -27,6 +27,8 @@ jobs:
     uses: Gforce-Innovation-Kft/shared-github-actions/.github/workflows/sf-release.yml@v1
     with:
       environment: devhub
+      # Temporary until gforceinnovation/sf-ci is published on Docker Hub
+      container-image: gforceinnovation/sf-devcontainer:latest
       full-deploy: ${{ github.event_name == 'workflow_dispatch' && inputs.full-deploy }}
     secrets:
       sfdx-auth-url: ${{ secrets.DEVHUB_AUTH_URL }}
