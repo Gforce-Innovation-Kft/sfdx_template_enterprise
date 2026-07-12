@@ -1,0 +1,23 @@
+# Thin caller — all validation logic lives in shared-github-actions.
+# See docs/CICD.md for the pipeline overview and required setup.
+name: PR Validate
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: pr-validate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: read
+
+jobs:
+  validate:
+    uses: Gforce-Innovation-Kft/shared-github-actions/.github/workflows/sf-validate.yml@v1
+    with:
+      scratch-org-validation: true
+    secrets:
+      sfdx-auth-url: ${{ secrets.DEVHUB_AUTH_URL }}
