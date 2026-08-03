@@ -11,7 +11,7 @@ Reusable Salesforce DX scaffold for GForce Innovation client engagements.
 - **fflib enterprise patterns** — Application factory, Domain / Selector / Service / Unit of Work layers (fflib-apex-common + fflib-apex-mocks as git submodules)
 - **NebulaLogger** — structured logging everywhere, `System.debug` banned by convention and PMD
 - **AI pair-programming, ready on clone** — `CLAUDE.md` conventions, 89 vendored [sf-skills](https://github.com/forcedotcom/sf-skills) pinned by `skills-lock.json`, GForce custom skills, coding-rule references in `.claude/references/`, and a graphify knowledge graph
-- **CI/CD** — scratch-org PR validation, staging auto-deploy, production deploy with manual approval, and a template self-verification workflow
+- **CI/CD** — PR checks (`jest` + scratch-org deploy/test) plus a delta check-only validate against the Dev Hub, gated `devhub` deploy with quick-deploy promotion (delta → full fallback) and a full audit trail (GitHub Deployments + artifacts), plus a template self-verification workflow — all via [shared reusable workflows](https://github.com/Gforce-Innovation-Kft/shared-github-actions)
 - **Worked reference feature** — FX Invoice Conversion (`Invoice__c`, trigger → handler → domain → selector → service → UoW → gateway, LWC, tests). It demonstrates every layer end-to-end; strip or replace it once your real requirements land. See `docs/product/PRODUCT.md`.
 - **Test scaffolding** — TestDataFactory (source-tracked, no package install), Jest for LWC, contract tests that keep the template itself honest
 
@@ -63,15 +63,13 @@ sf apex run test --test-level RunLocalTests
 
 ## CI/CD and required secrets
 
-Workflows live in `.github/workflows/`. `Template Verify` needs **no secrets**; the other three need org auth URLs added under **Settings → Secrets and variables → Actions**:
+The pipeline is two thin callers (`pr-validate.yml`, `release.yml`) over the reusable workflows in [shared-github-actions](https://github.com/Gforce-Innovation-Kft/shared-github-actions): PR = `jest` + scratch-org deploy/test (`pr-validate.yml`) and a delta check-only validate against the Dev Hub (`release.yml`); merge = required-reviewer gate on the `devhub` GitHub Environment, then a **quick deploy** of the PR-validated request (falls back to delta → full deploy). Every deploy leaves a GitHub Deployment record and an audit artifact. `Template Verify` needs **no secrets**; org access needs exactly one:
 
-| Secret                | Used by                 | How to generate                                                                      |
-| --------------------- | ----------------------- | ------------------------------------------------------------------------------------ |
-| `DEVHUB_AUTH_URL`     | `validate-pr.yml`       | `sf org display --target-org devhub --verbose --json \| jq -r '.result.sfdxAuthUrl'` |
-| `STAGING_AUTH_URL`    | `deploy-staging.yml`    | same, with `--target-org staging`                                                    |
-| `PRODUCTION_AUTH_URL` | `deploy-production.yml` | same, with `--target-org production`                                                 |
+| Secret            | Used by                          | How to generate                                                                      |
+| ----------------- | -------------------------------- | ------------------------------------------------------------------------------------ |
+| `DEVHUB_AUTH_URL` | `pr-validate.yml`, `release.yml` | `sf org display --target-org devhub --verbose --json \| jq -r '.result.sfdxAuthUrl'` |
 
-Also add GitHub **environment protection** named `production` (manual approval) for production deploys. Branch model and quality gates are documented in [CONTRIBUTING.md](CONTRIBUTING.md).
+Also add GitHub **environment protection** named `devhub` (required reviewer) and the branch ruleset on `main`. Full setup, quick-deploy mechanics, and the audit-trail story are in [docs/CICD.md](docs/CICD.md); branch model and quality gates in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Working with AI (Claude Code)
 
