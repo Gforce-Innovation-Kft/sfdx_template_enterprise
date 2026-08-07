@@ -40,6 +40,8 @@ When `graphify-out/graph.json` exists:
 | Skill                  | Trigger                              | Purpose                                                                                                                                        |
 | ---------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `salesforce-developer` | Any Apex / LWC / trigger / test task | Volume context, layer checklist, governor limit discipline, boundary conditions, 90% coverage gate — load before generating any technical code |
+| `new-requirement`      | New feature request                  | Generate a `REQ-NNN.yaml` from a business description                                                                                          |
+| `using-nebula-logger`  | Any `Logger.*` usage                 | Full NebulaLogger API reference                                                                                                                |
 
 > **`salesforce-developer` is the canonical GForce Salesforce standard**, not a template-local
 > skill. It is symlinked to `~/.claude/skills/salesforce-developer`, so it loads in **every**
@@ -52,8 +54,6 @@ When `graphify-out/graph.json` exists:
 >
 > If you edit anything under `.claude/references/`, you are changing the standard for every
 > repo. That is the point — but it means the blast radius is not local.
-> | `new-requirement` | New feature request | Generate a `REQ-NNN.yaml` from a business description |
-> | `using-nebula-logger` | Any `Logger.*` usage | Full NebulaLogger API reference |
 
 ## GForce Reference Files (`.claude/references/`)
 
