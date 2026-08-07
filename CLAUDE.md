@@ -40,8 +40,20 @@ When `graphify-out/graph.json` exists:
 | Skill                  | Trigger                              | Purpose                                                                                                                                        |
 | ---------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `salesforce-developer` | Any Apex / LWC / trigger / test task | Volume context, layer checklist, governor limit discipline, boundary conditions, 90% coverage gate — load before generating any technical code |
-| `new-requirement`      | New feature request                  | Generate a `REQ-NNN.yaml` from a business description                                                                                          |
-| `using-nebula-logger`  | Any `Logger.*` usage                 | Full NebulaLogger API reference                                                                                                                |
+
+> **`salesforce-developer` is the canonical GForce Salesforce standard**, not a template-local
+> skill. It is symlinked to `~/.claude/skills/salesforce-developer`, so it loads in **every**
+> repo — `sf-develop-demo`, client engagements, anywhere. This repo remains its home; edit it
+> here and the change applies everywhere immediately.
+>
+> Its `references/` is itself a symlink to `.claude/references/`, so the reference files travel
+> with the skill instead of resolving against whatever repo you happen to be in. Its `assets/`
+> holds compiling fflib templates to read before authoring.
+>
+> If you edit anything under `.claude/references/`, you are changing the standard for every
+> repo. That is the point — but it means the blast radius is not local.
+> | `new-requirement` | New feature request | Generate a `REQ-NNN.yaml` from a business description |
+> | `using-nebula-logger` | Any `Logger.*` usage | Full NebulaLogger API reference |
 
 ## GForce Reference Files (`.claude/references/`)
 

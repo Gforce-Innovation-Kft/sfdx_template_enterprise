@@ -7,15 +7,17 @@
 Bind variables are indexed, prevent SOQL injection, and avoid string concatenation errors.
 
 **BAD**
+
 ```apex
 String industry = 'Technology';
 List<Account> accs = Database.query('SELECT Id FROM Account WHERE Industry = \'' + industry + '\'');
 ```
 
 **GOOD**
+
 ```apex
 String industry = 'Technology';
-List<Account> accs = [SELECT Id, Name FROM Account WHERE Industry = :industry WITH SECURITY_ENFORCED];
+List<Account> accs = [SELECT Id, Name FROM Account WHERE Industry = :industry WITH USER_MODE];
 ```
 
 ---
@@ -29,7 +31,7 @@ Never use `SELECT *`. Enumerate fields explicitly to reduce heap usage and avoid
 List<Account> accs = [SELECT FIELDS(ALL) FROM Account LIMIT 200];
 
 // GOOD — select only what the operation needs
-List<Account> accs = [SELECT Id, Name, Industry, Rating FROM Account WHERE Id IN :ids WITH SECURITY_ENFORCED];
+List<Account> accs = [SELECT Id, Name, Industry, Rating FROM Account WHERE Id IN :ids WITH USER_MODE];
 ```
 
 In fflib selectors, `getSObjectFieldList()` is the canonical field list for the object. Add fields there — not scattered across individual methods.
@@ -44,10 +46,10 @@ Indexed by default: `Id`, `Name`, `CreatedDate`, `LastModifiedDate`, `SystemMods
 
 ```apex
 // BAD — non-indexed field first
-List<Account> accs = [SELECT Id FROM Account WHERE Industry = 'Tech' AND Id IN :ids WITH SECURITY_ENFORCED];
+List<Account> accs = [SELECT Id FROM Account WHERE Industry = 'Tech' AND Id IN :ids WITH USER_MODE];
 
 // GOOD — indexed Id first
-List<Account> accs = [SELECT Id FROM Account WHERE Id IN :ids AND Industry = 'Tech' WITH SECURITY_ENFORCED];
+List<Account> accs = [SELECT Id FROM Account WHERE Id IN :ids AND Industry = 'Tech' WITH USER_MODE];
 ```
 
 For large objects (>100k records), always filter on an indexed field to avoid full table scans.
@@ -60,7 +62,7 @@ Always add LIMIT for non-bulk queries. Use OFFSET for pagination (max 2000).
 
 ```apex
 // Single record lookup
-Account acc = [SELECT Id, Name FROM Account WHERE External_Id__c = :extId WITH SECURITY_ENFORCED LIMIT 1];
+Account acc = [SELECT Id, Name FROM Account WHERE External_Id__c = :extId WITH USER_MODE LIMIT 1];
 
 // Paginated list
 Integer pageSize = 50;
@@ -69,7 +71,7 @@ List<Account> page = [
     SELECT Id, Name, Industry
     FROM Account
     WHERE Industry = :industry
-    WITH SECURITY_ENFORCED
+    WITH USER_MODE
     ORDER BY Name ASC
     LIMIT :pageSize
     OFFSET :offset
@@ -86,10 +88,10 @@ Formula fields are not indexed. Filter on base fields, not formula results.
 
 ```apex
 // BAD — filtering on a formula field (full scan)
-List<Account> accs = [SELECT Id FROM Account WHERE Is_Enterprise__c = true WITH SECURITY_ENFORCED];
+List<Account> accs = [SELECT Id FROM Account WHERE Is_Enterprise__c = true WITH USER_MODE];
 
 // GOOD — filter on the base field the formula is derived from, or use a real field
-List<Account> accs = [SELECT Id FROM Account WHERE AnnualRevenue > 1000000 WITH SECURITY_ENFORCED];
+List<Account> accs = [SELECT Id FROM Account WHERE AnnualRevenue > 1000000 WITH USER_MODE];
 ```
 
 If you must filter on a formula field, consider adding a real `__c` field updated by a trigger/flow.
@@ -98,7 +100,7 @@ If you must filter on a formula field, consider adding a real `__c` field update
 
 ## 6. fflib Selector Patterns
 
-Use `fflib_QueryFactory` for all custom queries in selectors — it handles `WITH SECURITY_ENFORCED`, ordering, sub-selects, and field merging.
+Use `fflib_QueryFactory` for all custom queries in selectors — it handles `WITH USER_MODE`, ordering, sub-selects, and field merging.
 
 ```apex
 public List<Account> selectByRatingAndIndustry(String rating, String industry) {
@@ -136,7 +138,7 @@ Set<Id> accountIds = new Set<Id>();
 for (Opportunity opp : opportunities) { accountIds.add(opp.AccountId); }
 
 Map<Id, Account> accountMap = new Map<Id, Account>(
-    [SELECT Id, Name FROM Account WHERE Id IN :accountIds WITH SECURITY_ENFORCED]
+    [SELECT Id, Name FROM Account WHERE Id IN :accountIds WITH USER_MODE]
 );
 for (Opportunity opp : opportunities) {
     Account acc = accountMap.get(opp.AccountId);
@@ -151,17 +153,17 @@ Use `COUNT()` and aggregates for summary data — don't pull records just to cou
 
 ```apex
 // BAD — pulls all records just to count
-Integer count = [SELECT Id FROM Account WHERE Industry = 'Tech' WITH SECURITY_ENFORCED].size();
+Integer count = [SELECT Id FROM Account WHERE Industry = 'Tech' WITH USER_MODE].size();
 
 // GOOD
-Integer count = [SELECT COUNT() FROM Account WHERE Industry = 'Tech' WITH SECURITY_ENFORCED];
+Integer count = [SELECT COUNT() FROM Account WHERE Industry = 'Tech' WITH USER_MODE];
 
 // Aggregates
 List<AggregateResult> results = [
     SELECT Industry, COUNT(Id) total
     FROM Account
     WHERE CreatedDate = THIS_YEAR
-    WITH SECURITY_ENFORCED
+    WITH USER_MODE
     GROUP BY Industry
     ORDER BY COUNT(Id) DESC
 ];
@@ -174,6 +176,7 @@ List<AggregateResult> results = [
 Default SOQL row limit: 50,000 per transaction. Batch Apex: 50,000 per `execute()` chunk.
 
 For queries that might return large data sets:
+
 - Add `LIMIT` to cap rows
 - Use Batch Apex with `QueryLocator` for processing all records
 - Use `OFFSET` pagination for UI queries
@@ -182,7 +185,7 @@ For queries that might return large data sets:
 // Batch Apex — QueryLocator handles millions of records
 public Database.QueryLocator start(Database.BatchableContext bc) {
     return Database.getQueryLocator([
-        SELECT Id, Name, Industry FROM Account WHERE IsActive__c = true WITH SECURITY_ENFORCED
+        SELECT Id, Name, Industry FROM Account WHERE IsActive__c = true WITH USER_MODE
     ]);
 }
 ```

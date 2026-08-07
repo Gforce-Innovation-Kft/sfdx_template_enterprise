@@ -146,7 +146,7 @@ sf scanner run --target force-app/ --pmdconfig config/pmd-ruleset.xml --format t
 Key PMD rules enforced:
 
 - `ApexSOQLInjection` — all SOQL through selectors with bind vars
-- `ApexCRUDViolation` — WITH SECURITY_ENFORCED on all queries
+- `ApexCRUDViolation` — WITH USER_MODE on all queries
 - `AvoidSoqlInLoops` / `AvoidDmlInLoops` — zero tolerance
 - `ApexUnitTestClassShouldHaveAsserts` — every test must assert
 

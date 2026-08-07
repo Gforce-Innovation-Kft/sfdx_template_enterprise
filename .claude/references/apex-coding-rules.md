@@ -22,7 +22,7 @@ for (Account acc : accounts) {
 ```apex
 Set<Id> accountIds = new Map<Id, Account>(accounts).keySet();
 Map<Id, Contact> contactsByAccount = new Map<Id, Contact>();
-for (Contact c : [SELECT Id, AccountId FROM Contact WHERE AccountId IN :accountIds WITH SECURITY_ENFORCED]) {
+for (Contact c : [SELECT Id, AccountId FROM Contact WHERE AccountId IN :accountIds WITH USER_MODE]) {
     contactsByAccount.put(c.AccountId, c);
 }
 fflib_ISObjectUnitOfWork uow = Application.UnitOfWork.newInstance();
@@ -122,9 +122,14 @@ public with sharing class AccountSelector extends fflib_SObjectSelector implemen
     return Account.SObjectType;
   }
 
+  // REQUIRED: fflib enforces nothing by default (DataAccess.LEGACY).
+  // Pass DataAccess.USER_MODE so queries emit WITH USER_MODE.
+  public AccountsSelector() {
+    super(false, true, true, true, DataAccess.USER_MODE);
+  }
+
   public List<Account> selectById(Set<Id> ids) {
     return (List<Account>) selectSObjectsById(ids);
-    // fflib_SObjectSelector automatically adds WITH SECURITY_ENFORCED
   }
 
   public List<Account> selectByIndustry(String industry) {
@@ -162,14 +167,20 @@ public with sharing class AccountServiceImpl implements IAccountService {
 
 ## 3. Security
 
-**Every SOQL query must have `WITH SECURITY_ENFORCED` or use `Security.stripInaccessible`.**
+**Every SOQL query must have `WITH USER_MODE` or use `Security.stripInaccessible`.**
+
+> **fflib does NOT enforce this by default.** `fflib_SObjectSelector` defaults to
+> `DataAccess.LEGACY` and `fflib_QueryFactory` to `FLSEnforcement.NONE`, which emit no
+> security clause at all. Every selector must opt in via its constructor —
+> `super(..., DataAccess.USER_MODE)`. A selector that does not is silently running in
+> system mode. Verified against `libs/fflib-apex-common` in this repo.
 
 ```apex
-// Via fflib selector (preferred) — fflib adds WITH SECURITY_ENFORCED automatically
+// Via fflib selector (preferred) — the selector must be constructed with DataAccess.USER_MODE
 List<Account> accounts = selector.selectById(ids);
 
 // Manual SOQL — must add it explicitly
-List<Account> accounts = [SELECT Id, Name FROM Account WHERE Id IN :ids WITH SECURITY_ENFORCED];
+List<Account> accounts = [SELECT Id, Name FROM Account WHERE Id IN :ids WITH USER_MODE];
 
 // For dynamic SOQL or when you need stripInaccessible
 SObjectAccessDecision decision = Security.stripInaccessible(
@@ -316,7 +327,17 @@ Always use `Limits.getQueries()` guards in Batch `execute()` if dynamically issu
 
 ## 9. API Version
 
-All Apex: `apiVersion: 67.0` in meta files. Use `AccessLevel.USER_MODE` for DML when targeting API 56+:
+**Never hardcode an API version. Read it from the repo you are working in** —
+`sfdx-project.json` → `sourceApiVersion` — and put that value in every new `*-meta.xml`.
+
+This repo is on **67.0**; `sf-develop-demo` is on **65.0**. The official
+`platform-apex-generate` skill defaults to **66.0** and will use that unless told otherwise, so
+state the repo's version explicitly when invoking it.
+
+Match the files around you. A new class on a different API version than its neighbours is a
+review comment, not a feature.
+
+Use `AccessLevel.USER_MODE` for DML when targeting API 56+:
 
 ```apex
 Database.insert(records, AccessLevel.USER_MODE);

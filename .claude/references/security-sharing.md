@@ -23,10 +23,11 @@ public inherited sharing class AccountSelector extends fflib_SObjectSelector { }
 
 ## 2. SOQL Security
 
-**Every query must have `WITH SECURITY_ENFORCED` or go through `Security.stripInaccessible`.**
+**Every query must run in user mode: `WITH USER_MODE`, or `Security.stripInaccessible` where
+user mode cannot be used.**
 
 ```apex
-// Via fflib selector (preferred) — SECURITY_ENFORCED added automatically by fflib_QueryFactory
+// Via fflib selector (preferred) — set FLSEnforcement.USER_MODE on the query factory
 List<Account> accounts = selector.selectById(ids);
 
 // Manual SOQL — add it explicitly
@@ -34,10 +35,10 @@ List<Account> accounts = [
     SELECT Id, Name, Industry
     FROM Account
     WHERE Id IN :ids
-    WITH SECURITY_ENFORCED
+    WITH USER_MODE
 ];
 
-// Dynamic SOQL or when stripInaccessible is needed (e.g., unknown field set)
+// Dynamic SOQL, or when you need the surviving records rather than an exception
 SObjectAccessDecision decision = Security.stripInaccessible(
     AccessType.READABLE,
     [SELECT Id, Name, AnnualRevenue FROM Account WHERE Id IN :ids]
@@ -45,7 +46,25 @@ SObjectAccessDecision decision = Security.stripInaccessible(
 List<Account> safeAccounts = (List<Account>) decision.getRecords();
 ```
 
-Never use `WITH USER_MODE` as a replacement — it only enforces sharing, not FLS.
+### Why USER_MODE and not SECURITY_ENFORCED
+
+|                           | `WITH SECURITY_ENFORCED`       | `WITH USER_MODE` |
+| ------------------------- | ------------------------------ | ---------------- |
+| Field-level security      | yes, on fields in SELECT/WHERE | yes              |
+| Object permissions (CRUD) | **no**                         | yes              |
+| Sharing rules             | no                             | yes              |
+| Polymorphic relationships | poorly supported               | supported        |
+
+`USER_MODE` is the strict superset and the current platform recommendation. It also matches the
+DML rule in §3 below (`AccessLevel.USER_MODE`), so read and write paths enforce the same thing.
+
+The vendored `fflib_QueryFactory` in `libs/fflib-apex-common` already supports this —
+`FLSEnforcement.USER_MODE` emits `WITH USER_MODE` — so the selector layer needs no workaround.
+
+`WITH SECURITY_ENFORCED` in existing code is not a defect to fix on sight. Migrate it when you
+are already changing that query, and never mix the two in one class.
+
+> Requires API 55.0+. Every repo here is well past that.
 
 ---
 
@@ -70,9 +89,10 @@ insert accounts;
 
 ## 4. Field-Level Security (FLS)
 
-Never bypass FLS. The selector's `WITH SECURITY_ENFORCED` handles read FLS.
+Never bypass FLS. The selector's `WITH USER_MODE` handles read FLS and CRUD.
 
 For write FLS in service/domain:
+
 ```apex
 // Check field-level writability before setting values
 if (!Schema.SObjectType.Account.fields.AnnualRevenue.isUpdateable()) {
@@ -103,6 +123,7 @@ req.setEndpoint('callout:ExternalCRM_NC/api/data');
 Named Credential naming convention: `{ExternalSystem}_NC` (e.g., `ExternalCRM_NC`, `PaymentGateway_NC`).
 
 Store the Named Credential API name in Custom Metadata if it varies per environment:
+
 ```apex
 // Custom Metadata: GForce_Integration__mdt with NC_Name__c field
 GForce_Integration__mdt config = GForce_Integration__mdt.getInstance('ExternalCRM');
@@ -114,6 +135,7 @@ req.setEndpoint('callout:' + config.NC_Name__c + '/api/data');
 ## 6. Integration User
 
 External integrations (inbound API, Connected Apps) must use a dedicated integration user:
+
 - Profile: Minimum API-Only profile or custom minimum-access profile
 - Permission Sets: Only the objects/fields the integration needs
 - No sharing rules that expose unintended data
@@ -126,6 +148,7 @@ Never use a named user account for integrations — it creates audit trail conta
 ## 7. Permission Sets (not Profiles)
 
 Grant access via Permission Sets, not Profile customisations:
+
 - One Permission Set per functional role (e.g., `GForce_AccountManager_PS`)
 - Group into Permission Set Groups for assignment
 - Test in a scratch org with a user assigned only the relevant PSG
@@ -148,7 +171,7 @@ Never hardcode record IDs, RecordType IDs, Profile IDs, Role IDs, or any org-spe
 Account acc = [SELECT Id FROM Account WHERE Id = '0015g000001abc' LIMIT 1];
 
 // GOOD — query by external identifier
-Account acc = [SELECT Id FROM Account WHERE External_Id__c = :externalId WITH SECURITY_ENFORCED LIMIT 1];
+Account acc = [SELECT Id FROM Account WHERE External_Id__c = :externalId WITH USER_MODE LIMIT 1];
 
 // BAD — hardcoded RecordType
 acc.RecordTypeId = '0125g000000abc';
@@ -179,8 +202,9 @@ Alternatively rely on `AccessLevel.USER_MODE` on DML statements (API 56+) which 
 ## 10. Org Security Checklist
 
 Before deploying to production, verify:
+
 - [ ] All Apex classes: `with sharing` or justified `without sharing`
-- [ ] All SOQL: `WITH SECURITY_ENFORCED` or `Security.stripInaccessible`
+- [ ] All SOQL: `WITH USER_MODE` or `Security.stripInaccessible`
 - [ ] All DML via UoW or `AccessLevel.USER_MODE`
 - [ ] No hardcoded IDs, URLs, or credentials
 - [ ] Named Credentials used for all external callouts

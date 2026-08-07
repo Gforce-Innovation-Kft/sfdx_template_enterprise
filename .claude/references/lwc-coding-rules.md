@@ -9,28 +9,33 @@ Read this file before generating any Lightning Web Component code.
 Always use `lwc:if` / `lwc:elseif` / `lwc:else`. The legacy `if:true` / `if:false` directives are deprecated.
 
 **BAD**
+
 ```html
-<template if:true={isLoading}>
-    <lightning-spinner></lightning-spinner>
+<template if:true="{isLoading}">
+  <lightning-spinner></lightning-spinner>
 </template>
-<template if:false={isLoading}>
-    <p>Data loaded</p>
+<template if:false="{isLoading}">
+  <p>Data loaded</p>
 </template>
 ```
 
 **GOOD**
+
 ```html
-<template lwc:if={isLoading}>
-    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+<template lwc:if="{isLoading}">
+  <lightning-spinner
+    alternative-text="Loading"
+    size="small"
+  ></lightning-spinner>
 </template>
-<template lwc:elseif={hasError}>
-    <p class="slds-text-color_error">{errorMessage}</p>
+<template lwc:elseif="{hasError}">
+  <p class="slds-text-color_error">{errorMessage}</p>
 </template>
-<template lwc:elseif={isEmpty}>
-    <p class="slds-text-color_weak">No records found.</p>
+<template lwc:elseif="{isEmpty}">
+  <p class="slds-text-color_weak">No records found.</p>
 </template>
 <template lwc:else>
-    <!-- success state content -->
+  <!-- success state content -->
 </template>
 ```
 
@@ -43,52 +48,63 @@ Every data-driven component must handle all four states: loading, error, empty, 
 ```html
 <!-- myComponent.html -->
 <template>
-    <template lwc:if={isLoading}>
-        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+  <template lwc:if="{isLoading}">
+    <lightning-spinner
+      alternative-text="Loading"
+      size="small"
+    ></lightning-spinner>
+  </template>
+  <template lwc:elseif="{hasError}">
+    <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+      <span class="slds-assistive-text">error</span>
+      <p>{errorMessage}</p>
+    </div>
+  </template>
+  <template lwc:elseif="{isEmpty}">
+    <div class="slds-illustration slds-illustration_small">
+      <p class="slds-text-color_weak">No records to display.</p>
+    </div>
+  </template>
+  <template lwc:else>
+    <template for:each="{records}" for:item="record">
+      <div key="{record.Id}">{record.Name}</div>
     </template>
-    <template lwc:elseif={hasError}>
-        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
-            <span class="slds-assistive-text">error</span>
-            <p>{errorMessage}</p>
-        </div>
-    </template>
-    <template lwc:elseif={isEmpty}>
-        <div class="slds-illustration slds-illustration_small">
-            <p class="slds-text-color_weak">No records to display.</p>
-        </div>
-    </template>
-    <template lwc:else>
-        <template for:each={records} for:item="record">
-            <div key={record.Id}>{record.Name}</div>
-        </template>
-    </template>
+  </template>
 </template>
 ```
 
 ```js
 // myComponent.js
-import { LightningElement, wire } from 'lwc';
-import getAccounts from '@salesforce/apex/AccountController.getAccounts';
+import { LightningElement, wire } from "lwc";
+import getAccounts from "@salesforce/apex/AccountController.getAccounts";
 
 export default class MyComponent extends LightningElement {
-    records;
-    errorMessage;
-    isLoading = true;
+  records;
+  errorMessage;
+  isLoading = true;
 
-    get hasError() { return !!this.errorMessage; }
-    get isEmpty() { return !this.isLoading && !this.hasError && (!this.records || this.records.length === 0); }
+  get hasError() {
+    return !!this.errorMessage;
+  }
+  get isEmpty() {
+    return (
+      !this.isLoading &&
+      !this.hasError &&
+      (!this.records || this.records.length === 0)
+    );
+  }
 
-    @wire(getAccounts)
-    wiredAccounts({ data, error }) {
-        this.isLoading = false;
-        if (data) {
-            this.records = data;
-            this.errorMessage = undefined;
-        } else if (error) {
-            this.errorMessage = error.body?.message ?? 'Unknown error';
-            this.records = undefined;
-        }
+  @wire(getAccounts)
+  wiredAccounts({ data, error }) {
+    this.isLoading = false;
+    if (data) {
+      this.records = data;
+      this.errorMessage = undefined;
+    } else if (error) {
+      this.errorMessage = error.body?.message ?? "Unknown error";
+      this.records = undefined;
     }
+  }
 }
 ```
 
@@ -154,11 +170,11 @@ All user-visible strings must use Custom Labels. No hardcoded text in templates 
 
 ```js
 // JS
-import labelNoRecords from '@salesforce/label/c.No_Records_Found';
-import labelSaveSuccess from '@salesforce/label/c.Save_Successful';
+import labelNoRecords from "@salesforce/label/c.No_Records_Found";
+import labelSaveSuccess from "@salesforce/label/c.Save_Successful";
 
 export default class MyComponent extends LightningElement {
-    labels = { labelNoRecords, labelSaveSuccess };
+  labels = { labelNoRecords, labelSaveSuccess };
 }
 ```
 
@@ -172,7 +188,8 @@ export default class MyComponent extends LightningElement {
 ## 6. FLS Awareness
 
 Never trust client-side FLS. FLS enforcement happens in Apex:
-- Selectors use `WITH SECURITY_ENFORCED` or `Security.stripInaccessible`
+
+- Selectors use `WITH USER_MODE` or `Security.stripInaccessible`
 - LWC never bypasses Apex to query directly
 - Never use `@salesforce/schema` imports to write field values directly without Apex validation
 
@@ -181,12 +198,13 @@ For record forms, use `lightning-record-form`, `lightning-record-edit-form`, or 
 ```html
 <!-- Preferred for simple CRUD — FLS enforced automatically -->
 <lightning-record-form
-    record-id={recordId}
-    object-api-name="Account"
-    fields={fields}
-    mode="edit"
-    onsubmit={handleSubmit}
-    onsuccess={handleSuccess}>
+  record-id="{recordId}"
+  object-api-name="Account"
+  fields="{fields}"
+  mode="edit"
+  onsubmit="{handleSubmit}"
+  onsuccess="{handleSuccess}"
+>
 </lightning-record-form>
 ```
 
@@ -199,7 +217,7 @@ Use SLDS utility classes and Lightning base components before writing custom CSS
 ```html
 <!-- Layout -->
 <div class="slds-grid slds-wrap slds-gutters">
-    <div class="slds-col slds-size_1-of-2">...</div>
+  <div class="slds-col slds-size_1-of-2">...</div>
 </div>
 
 <!-- Typography -->
@@ -219,15 +237,15 @@ Custom CSS only when SLDS classes don't cover the need. All custom CSS in the co
 Use `NavigationMixin` — never `window.location` or `window.open` for internal Salesforce navigation.
 
 ```js
-import { NavigationMixin } from 'lightning/navigation';
+import { NavigationMixin } from "lightning/navigation";
 
 export default class MyComponent extends NavigationMixin(LightningElement) {
-    navigateToRecord() {
-        this[NavigationMixin.Navigate]({
-            type: 'standard__recordPage',
-            attributes: { recordId: this.accountId, actionName: 'view' }
-        });
-    }
+  navigateToRecord() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__recordPage",
+      attributes: { recordId: this.accountId, actionName: "view" }
+    });
+  }
 }
 ```
 

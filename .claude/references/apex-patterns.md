@@ -127,12 +127,17 @@ public with sharing class AccountSelector extends fflib_SObjectSelector implemen
     return Account.SObjectType;
   }
 
-  // fflib_SObjectSelector.selectSObjectsById() automatically adds WITH SECURITY_ENFORCED
+  // REQUIRED: fflib defaults to DataAccess.LEGACY, which emits no security clause.
+  // This constructor is what makes every query in this selector run WITH USER_MODE.
+  public AccountsSelector() {
+    super(false, true, true, true, DataAccess.USER_MODE);
+  }
+
   public List<Account> selectById(Set<Id> ids) {
     return (List<Account>) selectSObjectsById(ids);
   }
 
-  // Custom query using QueryFactory — always add WITH SECURITY_ENFORCED via setEnforceFLS(true) (default)
+  // newQueryFactory() inherits the selector's DataAccess setting — no per-query flag needed
   public List<Account> selectByIndustry(String industry) {
     fflib_QueryFactory qf = newQueryFactory();
     qf.setCondition('Industry = :industry');

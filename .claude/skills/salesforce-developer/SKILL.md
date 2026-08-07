@@ -1,7 +1,15 @@
 ---
 name: salesforce-developer
-description: GForce Salesforce technical development rules. Load before generating any Apex class, trigger, LWC component, batch job, or test class. Enforces fflib layered architecture, NebulaLogger, bulkification, governor limit discipline, and boundary condition testing. Trigger on any request to write, review, or refactor Salesforce code.
-version: 1.0.0
+description: >
+  GForce Salesforce house standards — fflib layered architecture, NebulaLogger, bulkification,
+  governor limit discipline, boundary condition testing, and the 90% coverage gate.
+  TRIGGER when: writing, reviewing, or refactoring Apex classes, triggers, LWC components,
+  batch/queueable jobs, test classes, SOQL, selectors, services, or domains; or when deciding
+  where a piece of Salesforce logic belongs.
+  DO NOT TRIGGER when: writing Ansible, GitHub Actions workflows, Terraform, TypeScript, or
+  Node tooling that merely mentions Salesforce; or when the task is CI/CD plumbing rather than
+  org metadata.
+version: 1.1.0
 tags: [salesforce, apex, lwc, fflib, development, technical]
 ---
 
@@ -9,21 +17,38 @@ tags: [salesforce, apex, lwc, fflib, development, technical]
 
 Load this skill for any Salesforce technical task: Apex classes, LWC components, triggers, batch jobs, test classes, SOQL, selectors, services, domains.
 
+**This is the canonical GForce Salesforce standard.** It is symlinked into `~/.claude/skills/`,
+so it applies in every repo — not only this template. Where a repo's own conventions differ,
+the repo wins; say so explicitly rather than silently following one or the other.
+
 ---
 
 ## Step 0 — Read the right reference file first
 
 Do NOT skip. The reference files contain authoritative patterns with code examples.
 
+Paths below are **relative to this skill directory**, so they resolve wherever the skill is
+loaded from. (`references/` is a symlink to the template repo's `.claude/references/`.)
+
 | What you're building | Read first |
 |---|---|
-| Any Apex class | `.claude/references/apex-coding-rules.md` |
-| fflib layer (domain / selector / service / UoW / application factory) | `.claude/references/apex-patterns.md` |
-| Any test class | `.claude/references/testing-testdatafactory.md` |
-| Any LWC component | `.claude/references/lwc-coding-rules.md` |
-| SOQL queries or selector methods | `.claude/references/soql-optimization.md` |
-| Sharing model, FLS, CRUD, Named Credentials | `.claude/references/security-sharing.md` |
+| Any Apex class | `references/apex-coding-rules.md` |
+| fflib layer (domain / selector / service / UoW / application factory) | `references/apex-patterns.md` |
+| Any test class | `references/testing-testdatafactory.md` |
+| Any LWC component | `references/lwc-coding-rules.md` |
+| SOQL queries or selector methods | `references/soql-optimization.md` |
+| Sharing model, FLS, CRUD, Named Credentials | `references/security-sharing.md` |
 | Any Logger.* usage | invoke skill `using-nebula-logger` |
+
+And read the matching template in `assets/` before authoring:
+
+| Building | Template |
+|---|---|
+| Selector | `assets/AccountsSelector.cls` |
+| Service | `assets/IAccountsService.cls` + `assets/AccountsServiceImpl.cls` |
+| Domain | `assets/Accounts.cls` |
+| Test | `assets/AccountsServiceTest.cls` |
+| Application.cls registration | `assets/README.md` |
 
 ---
 
@@ -48,6 +73,17 @@ Before writing a line, confirm:
 - [ ] DML lives only in Unit of Work (`uow.commitWork()`) — never direct `insert`/`update`/`delete`
 - [ ] `with sharing` is the default — `without sharing` requires an explicit comment explaining why
 - [ ] Does `Application.cls` need updating? (register new SObjects in Service, Selector, Domain, UoW maps)
+- [ ] Every new Selector's constructor passes `DataAccess.USER_MODE` — **fflib enforces nothing
+      by default**, so a selector without it silently runs in system mode
+
+## Step 2a — Templates and API version
+
+- **Read the matching file in `assets/` before authoring.** They are real, compiling examples of
+  the layer you are about to write; adapt them rather than inventing a shape.
+- **Take the API version from the repo**, not from memory: `sfdx-project.json` →
+  `sourceApiVersion`. This template is 67.0, `sf-develop-demo` is 65.0, and
+  `platform-apex-generate` defaults to 66.0 unless you override it. State the version you are
+  using when you invoke that skill.
 
 ---
 
@@ -97,6 +133,8 @@ Every generated method must handle:
 
 - SOQL inside any loop (`for`, `while`, `do-while`) — zero tolerance
 - DML inside any loop — zero tolerance
+- A Selector constructed without `DataAccess.USER_MODE` (or an equivalent explicit opt-in)
+- `WITH SECURITY_ENFORCED` in new code — use `WITH USER_MODE`; it enforces CRUD and sharing too
 - `System.debug` anywhere — use `Logger.*` (NebulaLogger)
 - Logic inside a trigger file — one line to handler only
 - Hardcoded IDs, profile names, org URLs, or credentials
