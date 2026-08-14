@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   validate:
-    uses: Gforce-Innovation-Kft/shared-github-actions/.github/workflows/sf-pr-validate.yml@v1
+    uses: Gforce-Innovation-Kft/shared-github-actions/.github/workflows/reusable-sf-pr-validate.yml@v2
     with:
       # Temporary until gforceinnovation/sf-ci is published on Docker Hub
       container-image: gforceinnovation/sf-ci:latest
