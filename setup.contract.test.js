@@ -9,7 +9,8 @@
  *
  *   1. Vendored sf-skills match skills-lock.json (canonical dir + symlink).
  *   2. Every sf-skill name referenced in the docs actually exists.
- *   3. Every .claude/references/*.md file promised by CLAUDE.md exists.
+ *   3. The seven core rule files ship in the salesforce-developer skill, this
+ *      repo keeps no shadowing copy, and CLAUDE.md promises nothing missing.
  *   4. Core repo shape (sfdx-project.json, submodules, scripts, docs).
  *   5. Token state is consistent: either pristine template (tokens present)
  *      or fully personalised (no tokens anywhere) — never half-replaced.
@@ -112,23 +113,61 @@ describe("doc ↔ skill lockstep", () => {
   });
 });
 
-// ── 3. Reference files promised by CLAUDE.md exist ────────────────────────────
+// ── 3. Coding rules live in the skill; this repo holds only its override ──────
 
-describe("CLAUDE.md reference files", () => {
-  // Referenced either as full paths (`.claude/references/x.md`) or as bare
-  // backticked filenames in the reference-file table.
-  const text = read("CLAUDE.md");
-  const refs = [
-    ...text.matchAll(/\.claude\/references\/([a-z0-9-]+\.md)/g),
-    ...text.matchAll(/`([a-z0-9-]+\.md)`/g)
-  ].map((m) => m[1]);
+describe("coding-rule references", () => {
+  const CORE_RULES = [
+    "apex-coding-rules.md",
+    "apex-patterns.md",
+    "deployment-devops.md",
+    "lwc-coding-rules.md",
+    "security-sharing.md",
+    "soql-optimization.md",
+    "testing-testdatafactory.md"
+  ];
+  const SKILL_REFS = path.join(
+    ".claude",
+    "skills",
+    "salesforce-developer",
+    "references"
+  );
 
-  it("CLAUDE.md references at least the seven core files", () => {
-    expect(new Set(refs).size).toBeGreaterThanOrEqual(7);
+  // These used to be duplicated into .claude/references/ as well. The copies
+  // drifted — by the time they were removed they taught `if:true`/`if:false`
+  // and asserted that WITH USER_MODE does not enforce FLS, both of which the
+  // skill had long since corrected. A second copy of a rule is a rule that will
+  // go stale, so the contract now asserts the single-source shape.
+  it.each(CORE_RULES)("the salesforce-developer skill ships %s", (file) => {
+    expect(exists(path.join(SKILL_REFS, file))).toBe(true);
   });
 
-  it.each([...new Set(refs)])(".claude/references/%s exists", (file) => {
-    expect(exists(path.join(".claude", "references", file))).toBe(true);
+  it("no local rule file shadows a skill reference", () => {
+    const dir = path.join(ROOT, ".claude", "references");
+    const local = fs.existsSync(dir) ? fs.readdirSync(dir) : [];
+    expect(local.filter((f) => CORE_RULES.includes(f))).toEqual([]);
+  });
+
+  it("local-standards.md exists — the only sanctioned override point", () => {
+    expect(
+      exists(path.join(".claude", "references", "local-standards.md"))
+    ).toBe(true);
+  });
+
+  it("every .claude/references file CLAUDE.md promises actually exists", () => {
+    const promised = [
+      ...new Set(
+        [
+          ...read("CLAUDE.md").matchAll(
+            /\.claude\/references\/([a-z0-9-]+\.md)/g
+          )
+        ].map((m) => m[1])
+      )
+    ];
+    expect(promised.length).toBeGreaterThan(0);
+    const missing = promised.filter(
+      (f) => !exists(path.join(".claude", "references", f))
+    );
+    expect(missing).toEqual([]);
   });
 });
 
