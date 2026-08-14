@@ -42,7 +42,7 @@ Trigger → TriggerHandler → Domain → Selector → Service → UnitOfWork �
 - **Trigger**: zero logic — one line: `AccountTriggerHandler.run();`
 - **TriggerHandler**: delegates to `fflib_SObjectDomain.triggerHandler(AccountDomain.class)`
 - **Domain**: field validation, SObject-specific rules. No SOQL. No DML.
-- **Selector**: all SOQL. No DML. No business logic. Always `WITH SECURITY_ENFORCED`.
+- **Selector**: all SOQL. No DML. No business logic. Always user mode (`WITH USER_MODE`).
 - **Service**: orchestrates Domain + Selector + UoW. One method = one business operation.
 - **UnitOfWork**: all DML via `Application.UnitOfWork.newInstance()`. No direct `insert/update/delete`.
 - **Gateway**: HTTP callouts via Named Credentials. Has a mockable interface.
@@ -56,7 +56,7 @@ All classes registered in `Application.cls` (service, selector, domain, UoW).
 
 - No SOQL inside loops
 - No DML inside loops
-- All SOQL through Selectors with `WITH SECURITY_ENFORCED`
+- All SOQL through Selectors in user mode (`WITH USER_MODE`) — enforces CRUD, FLS and sharing
 - All DML through Unit of Work (`uow.registerNew/Dirty/Deleted` → `uow.commitWork()`)
 - `with sharing` on every class (unless justified in an inline comment)
 - No hardcoded IDs, org URLs, or credentials
@@ -73,7 +73,7 @@ When generating an Apex class, verify:
 - [ ] `public with sharing class`
 - [ ] Implements the correct interface (`IAccountService`, `IAccountSelector`, etc.)
 - [ ] Registered in `Application.cls`
-- [ ] All SOQL has `WITH SECURITY_ENFORCED`
+- [ ] All SOQL has `WITH USER_MODE`
 - [ ] All DML via `fflib_ISObjectUnitOfWork`
 - [ ] `Logger.*` calls at entry points and catch blocks
 - [ ] `Logger.saveLog()` before returning from service methods
@@ -113,9 +113,8 @@ When generating an LWC component, verify:
 
 ## Skills Available
 
-```
-npx skills add forcedotcom/sf-skills
-```
+Already vendored and pinned in `skills-lock.json` — do not re-add them. To sync
+after pulling: `npx skills check`.
 
 Invoke by name in your prompt:
 

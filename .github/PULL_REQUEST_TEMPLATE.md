@@ -1,6 +1,6 @@
 ## Change type
 
-- [ ] Feature (REQ-___: ___)
+- [ ] Feature (REQ-**_: _**)
 - [ ] Bug fix
 - [ ] Refactor
 - [ ] Chore / dependency update
@@ -20,7 +20,7 @@
 
 - [ ] No `System.debug` in production code — NebulaLogger used
 - [ ] No SOQL or DML in loops
-- [ ] All SOQL uses `WITH SECURITY_ENFORCED` or `Security.stripInaccessible`
+- [ ] All SOQL uses `WITH USER_MODE` (or `Security.stripInaccessible` where a partial result is wanted)
 - [ ] All DML through Unit of Work
 - [ ] No hardcoded IDs or credentials
 - [ ] `with sharing` on all classes (or documented exception)
@@ -28,6 +28,6 @@
 
 ## Security checklist
 
-- [ ] FLS respected (selector queries + `WITH SECURITY_ENFORCED`)
+- [ ] FLS respected — selector queries run in user mode (`WITH USER_MODE`); the fflib default does NOT enforce FLS
 - [ ] No new Named Credentials inline — using Named Credential framework
 - [ ] No new sensitive fields without PII annotation in REQ YAML
