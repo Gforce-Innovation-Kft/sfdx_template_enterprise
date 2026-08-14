@@ -2,7 +2,18 @@
 name: omnistudio-integration-procedure-generate
 description: "OmniStudio Integration Procedure creation and validation with 110-point scoring. Use this skill when building server-side process orchestrations that combine Data Mapper actions, Apex Remote Actions, HTTP callouts, and conditional logic. TRIGGER when: user creates Integration Procedures, adds Data Mapper steps, configures Remote Actions, or reviews existing IP configurations. DO NOT TRIGGER when: building OmniScripts (use omnistudio-omniscript-generate), creating Data Mappers directly (use omnistudio-datamapper-generate), or analyzing cross-component dependencies (use omnistudio-dependencies-analyze)."
 metadata:
+  cliTools:
+    - tool: ["sf"]
+      semver: ">=2.0.0"
+  relatedSkills:
+    - "omnistudio-datamapper-generate"
+    - "omnistudio-dependencies-analyze"
+    - "omnistudio-flexcard-generate"
+    - "omnistudio-omniscript-generate"
+    - "platform-apex-generate"
+    - "platform-metadata-deploy"
   version: "1.0"
+  minApiVersion: "60.0"
 ---
 
 # omnistudio-integration-procedure-generate: OmniStudio Integration Procedure Creation and Validation
@@ -27,7 +38,7 @@ Expert OmniStudio Integration Procedure (IP) builder with deep knowledge of serv
 
 ## Quick Reference
 
-**Scoring**: 110 points across 6 categories. **Thresholds**: ✅ 90+ (Deploy) | ⚠️ 67-89 (Review) | ❌ <67 (Block - fix required)
+**Scoring**: 110 points across 6 categories. **Thresholds**: [PASS] 90+ (Deploy) | [REVIEW] 67-89 (Review) | [BLOCK] <67 (Block - fix required)
 
 ---
 
@@ -272,3 +283,11 @@ Deliverables produced by this skill:
 | `references/best-practices.md` | Phase 2-5 — Design patterns: element composition, error handling, caching, parallel execution, and security guidance |
 | `references/element-types.md` | Phase 2 — Element selection: read before configuring PropertySetConfig for any element type |
 | `scripts/cli-commands.sh` | Phase 1 & 4 — CLI queries and deploy/retrieve commands; adapt by replacing `<Name>` and `<org>` placeholders |
+
+---
+
+## Pre-Delivery Checklist
+
+- [ ] Data Mappers exist and are deployed before IP references them
+- [ ] `IsIntegrationProcedure = true` set when creating via Data API
+- [ ] IP activated before any OmniScript/FlexCard invokes it

@@ -2,7 +2,21 @@
 name: omnistudio-callable-apex-generate
 description: "Salesforce Industries Common Core (OmniStudio/Vlocity) Apex callable generation and review skill with 120-point scoring. Use when creating, reviewing, or migrating Industries callable Apex implementations. TRIGGER when: user creates or reviews System.Callable classes, migrates VlocityOpenInterface or VlocityOpenInterface2, or builds Industries callable extensions used by OmniStudio, Integration Procedures, or DataRaptors. DO NOT TRIGGER when: generic Apex classes or triggers (use platform-apex-generate), building Integration Procedures (use omnistudio-integration-procedure-generate), authoring OmniScripts (use omnistudio-omniscript-generate), configuring Data Mappers (use omnistudio-datamapper-generate), or analyzing namespace/dependency issues (use omnistudio-dependencies-analyze)."
 metadata:
+  relatedSkills:
+    - "external-diagram-mermaid-generate"
+    - "omnistudio-datamapper-generate"
+    - "omnistudio-dependencies-analyze"
+    - "omnistudio-integration-procedure-generate"
+    - "omnistudio-omniscript-generate"
+    - "platform-apex-generate"
+    - "platform-apex-test-run"
+    - "platform-custom-field-generate"
+    - "platform-custom-object-generate"
+    - "platform-data-manage"
+    - "platform-metadata-deploy"
+    - "platform-soql-query"
   version: "1.0"
+  minApiVersion: "60.0"
 ---
 
 # omnistudio-callable-apex-generate: Callable Apex for Salesforce Industries Common Core
@@ -53,7 +67,7 @@ Then:
 - Output schema (consistent response envelope)
 
 **Recommended response envelope**:
-```
+```json
 {
   "success": true|false,
   "data": {...},
@@ -70,7 +84,7 @@ Then:
 
 When designing for legacy Open Interface extensions (or dual Callable + Open Interface support), map the signature:
 
-```
+```text
 invokeMethod(String methodName, Map<String, Object> inputMap, Map<String, Object> outputMap, Map<String, Object> options)
 ```
 
@@ -171,7 +185,7 @@ action contract stable.
 | **Testing** | 15 | Positive/negative/contract/bulk tests |
 | **Documentation** | 10 | ApexDoc (`/** ... */` block comments — Salesforce Apex documentation standard) for class and action methods |
 
-**Thresholds**: ✅ 90+ (Ready) | ⚠️ 70-89 (Review) | ❌ <70 (Block)
+**Thresholds**: [PASS] 90+ (Ready) | [REVIEW] 70-89 (Review) | [BLOCK] <70 (Block)
 
 ---
 
@@ -266,10 +280,20 @@ Deliverables produced by this skill:
 | `examples/Test_VlocityOpenInterfaceConversion/MyCustomCallable.cls` | Phase 3 — migration pattern from legacy `VlocityOpenInterface` |
 | `examples/Test_VlocityOpenInterfaceConversion/MyCustomCallableTest.cls` | Phase 4 — test class for VlocityOpenInterface migration example |
 | `examples/Test_VlocityOpenInterfaceConversion/IndustriesCallableException.cls` | Phase 3 — custom exception class deployed alongside VlocityOpenInterface conversion |
-| `examples/Test_VlocityOpenInterfaceConversion/MyCustomVlocityOpenInterface2.cls` | Phase 3 — the original legacy VlocityOpenInterface2 class before migration |
+| `examples/Test_VlocityOpenInterfaceConversion/MyCustomClass.cls` | Phase 3 — the original legacy VlocityOpenInterface class before migration |
 | `examples/Test_VlocityOpenInterfaceConversion/TRANSCRIPT.md` | Reference — reasoning transcript for VlocityOpenInterface conversion |
 | `examples/Test_VlocityOpenInterface2Conversion/MyCustomCallable.cls` | Phase 3 — migration pattern from `VlocityOpenInterface2` |
 | `examples/Test_VlocityOpenInterface2Conversion/MyCustomCallableTest.cls` | Phase 4 — test class for VlocityOpenInterface2 migration example |
 | `examples/Test_VlocityOpenInterface2Conversion/IndustriesCallableException.cls` | Phase 3 — custom exception class deployed alongside VlocityOpenInterface2 conversion |
 | `examples/Test_VlocityOpenInterface2Conversion/MyCustomRemoteClass.cls` | Phase 3 — remote class used by the VlocityOpenInterface2 migration example |
 | `examples/Test_VlocityOpenInterface2Conversion/TRANSCRIPT.md` | Reference — reasoning transcript for VlocityOpenInterface2 conversion |
+
+---
+
+## Pre-Delivery Checklist
+
+- [ ] `call()` null-checks `args` before accessing keys
+- [ ] `IndustriesCallableException` class included in deployment package
+- [ ] Namespace qualified for `omnistudio.VlocityOpenInterface2` (if applicable)
+- [ ] `outputMap` keys documented per action (success and error cases)
+- [ ] Migrated callers read return value instead of `outputMap` by reference

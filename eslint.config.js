@@ -8,7 +8,7 @@ const globals = require("globals");
 module.exports = defineConfig([
   // Vendored / third-party code is not linted by this project
   {
-    ignores: ["libs/**", "node_modules/**", ".agents/**", "graphify-out/**"]
+    ignores: ["libs/**", "node_modules/**", ".agents/**"]
   },
 
   // Aura configuration

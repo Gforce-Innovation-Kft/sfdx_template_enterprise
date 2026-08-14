@@ -3,6 +3,17 @@ name: data360-connect
 description: "Salesforce Data Cloud Connect phase. Use this skill when the user manages Data Cloud connections, connectors, or sets up a new source system. TRIGGER when: user manages Data Cloud connections, connectors, connector metadata, tests a connection, browses source objects or databases, or sets up a new source system. DO NOT TRIGGER when: the task is about data streams or DLOs (use data360-prepare), DMOs or identity resolution (use data360-harmonize), retrieval/search (use data360-query), or STDM telemetry (use agentforce-observe)."
 compatibility: "Requires the sf data360 CLI plugin and a Data Cloud-enabled org"
 metadata:
+  cliTools:
+    - tool: ["node"]
+      semver: ">=18.0.0"
+    - tool: ["sf"]
+      semver: ">=2.0.0"
+  relatedSkills:
+    - "agentforce-observe"
+    - "data360-harmonize"
+    - "data360-orchestrate"
+    - "data360-prepare"
+    - "data360-query"
   version: "1.0"
 ---
 
@@ -142,7 +153,6 @@ Next step: <prepare phase or connector follow-up>
 
 ## References
 
-- [README.md](README.md)
 - [examples/connections/heroku-postgres.json](examples/connections/heroku-postgres.json)
 - [examples/connections/redshift.json](examples/connections/redshift.json)
 - [examples/connections/sharepoint-unstructured.json](examples/connections/sharepoint-unstructured.json)
@@ -151,4 +161,3 @@ Next step: <prepare phase or connector follow-up>
 - [examples/connections/ingest-api-schema.json](examples/connections/ingest-api-schema.json)
 - [../data360-orchestrate/references/plugin-setup.md](../data360-orchestrate/references/plugin-setup.md)
 - [../data360-orchestrate/references/feature-readiness.md](../data360-orchestrate/references/feature-readiness.md)
-- [../data360-orchestrate/UPSTREAM.md](../data360-orchestrate/UPSTREAM.md)

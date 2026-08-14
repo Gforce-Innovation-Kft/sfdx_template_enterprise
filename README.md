@@ -10,7 +10,7 @@ Reusable Salesforce DX scaffold for GForce Innovation client engagements.
 
 - **fflib enterprise patterns** — Application factory, Domain / Selector / Service / Unit of Work layers (fflib-apex-common + fflib-apex-mocks as git submodules)
 - **NebulaLogger** — structured logging everywhere, `System.debug` banned by convention and PMD
-- **AI pair-programming, ready on clone** — `CLAUDE.md` conventions, 89 vendored [sf-skills](https://github.com/forcedotcom/sf-skills) pinned by `skills-lock.json`, GForce custom skills, coding-rule references in `.claude/references/`, and a graphify knowledge graph
+- **AI pair-programming, ready on clone** — `CLAUDE.md` conventions, 89 vendored [sf-skills](https://github.com/forcedotcom/sf-skills) pinned by `skills-lock.json`, GForce custom skills, and the house `salesforce-developer` standard consumed from [gforce-ai](https://github.com/Gforce-Innovation-Kft/gforce-ai) (override it per project in `.claude/references/local-standards.md`)
 - **CI/CD** — PR checks (`jest` + scratch-org deploy/test) plus a delta check-only validate against the Dev Hub, gated `devhub` deploy with quick-deploy promotion (delta → full fallback) and a full audit trail (GitHub Deployments + artifacts), plus a template self-verification workflow — all via [shared reusable workflows](https://github.com/Gforce-Innovation-Kft/shared-github-actions)
 - **Worked reference feature** — FX Invoice Conversion (`Invoice__c`, trigger → handler → domain → selector → service → UoW → gateway, LWC, tests). It demonstrates every layer end-to-end; strip or replace it once your real requirements land. See `docs/product/PRODUCT.md`.
 - **Test scaffolding** — TestDataFactory (source-tracked, no package install), Jest for LWC, contract tests that keep the template itself honest
@@ -48,7 +48,7 @@ sf project deploy start
 sf apex run test --test-level RunLocalTests
 ```
 
-`setup.js` replaces the `{{PROJECT_NAME}}` / `{{CLIENT_NAME}}` / `{{ORG_ALIAS}}` tokens across the project, initialises submodules, installs npm dependencies, verifies the vendored sf-skills against `skills-lock.json`, and sets up the graphify knowledge graph. It is idempotent and fails loudly if the template is incomplete.
+`setup.js` replaces the `{{PROJECT_NAME}}` / `{{CLIENT_NAME}}` / `{{ORG_ALIAS}}` tokens across the project, initialises submodules, installs npm dependencies, and verifies the vendored sf-skills against `skills-lock.json`. It is idempotent and fails loudly if the template is incomplete.
 
 ## Everyday commands
 

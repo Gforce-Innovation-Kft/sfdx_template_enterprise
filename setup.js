@@ -100,15 +100,9 @@ async function collectProjectInfo(deps = {}) {
   }
 }
 
-// ── Step 1/6: Token replacement ───────────────────────────────────────────────
+// ── Step 1/5: Token replacement ───────────────────────────────────────────────
 
-const EXCLUDED_DIRS = new Set([
-  ".git",
-  "node_modules",
-  "libs",
-  "graphify-out",
-  ".agents"
-]);
+const EXCLUDED_DIRS = new Set([".git", "node_modules", "libs", ".agents"]);
 const INCLUDED_EXTS = new Set([
   ".json",
   ".yaml",
@@ -196,7 +190,7 @@ function personalizePackageJson({ projectName, clientName }, root = REPO_ROOT) {
   log.success(`package.json personalised (name: ${pkg.name})`);
 }
 
-// ── Step 2/6: Git submodules ──────────────────────────────────────────────────
+// ── Step 2/5: Git submodules ──────────────────────────────────────────────────
 
 function initSubmodules(deps = {}) {
   const exec = deps.execSync || ((cmd, opts) => run(cmd, opts));
@@ -215,7 +209,7 @@ function initSubmodules(deps = {}) {
   log.success("Submodules initialised");
 }
 
-// ── Step 3/6: npm install ─────────────────────────────────────────────────────
+// ── Step 3/5: npm install ─────────────────────────────────────────────────────
 
 function installNpmDeps(deps = {}) {
   const _hasCommand = deps.hasCommand || hasCommand;
@@ -232,7 +226,7 @@ function installNpmDeps(deps = {}) {
   log.success("npm dependencies installed");
 }
 
-// ── Step 4/6: sf-skills ───────────────────────────────────────────────────────
+// ── Step 4/5: sf-skills ───────────────────────────────────────────────────────
 //
 // Skills are vendored in the template (.agents/skills/ + .claude/skills/ symlinks)
 // so every clone gets the exact reviewed versions — nothing is downloaded here.
@@ -240,7 +234,6 @@ function installNpmDeps(deps = {}) {
 // GForce custom skills are present. A mismatch fails setup loudly.
 
 const CUSTOM_SKILLS = [
-  "graphify",
   "new-requirement",
   "salesforce-developer",
   "using-nebula-logger"
@@ -276,81 +269,7 @@ function verifySfSkills(deps = {}) {
   );
 }
 
-// ── Step 5/6: Graphify ────────────────────────────────────────────────────────
-
-function setupGraphify(deps = {}) {
-  const _hasCommand = deps.hasCommand || hasCommand;
-  const exec = deps.execSync || ((cmd, opts) => run(cmd, opts));
-  const rootDir = deps.root || REPO_ROOT;
-
-  if (!_hasCommand("graphify")) {
-    if (_hasCommand("uv")) {
-      log.info("Installing graphify via uv...");
-      try {
-        exec("uv tool install graphifyy", { cwd: rootDir, stdio: "inherit" });
-      } catch {
-        /* non-fatal */
-      }
-    } else if (_hasCommand("pipx")) {
-      log.info("Installing graphify via pipx...");
-      try {
-        exec("pipx install graphifyy", { cwd: rootDir, stdio: "inherit" });
-      } catch {
-        /* non-fatal */
-      }
-    } else {
-      log.warn("Neither uv nor pipx found. Install one of:");
-      log.warn("  uv:   curl -LsSf https://astral.sh/uv/install.sh | sh");
-      log.warn("  pipx: brew install pipx");
-    }
-  }
-
-  if (!_hasCommand("graphify")) {
-    log.warn("graphify not installed — run manually after setup");
-    return;
-  }
-
-  log.info("Registering graphify with Claude Code (project-scoped)...");
-  try {
-    exec("graphify install --project", { cwd: rootDir, stdio: "inherit" });
-  } catch {
-    /* non-fatal */
-  }
-
-  log.info("Installing git hooks (auto-update graph on commit)...");
-  try {
-    exec("graphify hook install", { cwd: rootDir, stdio: "inherit" });
-  } catch {
-    /* non-fatal */
-  }
-
-  const graphJson = path.join(rootDir, "graphify-out", "graph.json");
-  if (fs.existsSync(graphJson)) {
-    log.info("Updating existing knowledge graph...");
-    try {
-      exec("graphify update .", { cwd: rootDir, stdio: "inherit" });
-    } catch {
-      /* non-fatal */
-    }
-  } else {
-    log.info(
-      "Building initial knowledge graph (code-only, no API key needed)..."
-    );
-    try {
-      exec("graphify .", { cwd: rootDir, stdio: "inherit" });
-    } catch {
-      log.warn(
-        "graphify build skipped — run '/graphify .' in Claude Code to build"
-      );
-    }
-  }
-
-  log.success(
-    "graphify ready — use 'graphify query \"<question>\"' or '/graphify .' in Claude Code"
-  );
-}
-
-// ── Step 6/6: TestDataFactory ─────────────────────────────────────────────────
+// ── Step 5/5: TestDataFactory ─────────────────────────────────────────────────
 
 function confirmTestDataFactory() {
   log.info(
@@ -369,23 +288,20 @@ async function main() {
 
   const names = await collectProjectInfo();
 
-  log.header("1/6  Personalising template files");
+  log.header("1/5  Personalising template files");
   replaceTokens(names);
   personalizePackageJson(names);
 
-  log.header("2/6  Initialising git submodules");
+  log.header("2/5  Initialising git submodules");
   initSubmodules();
 
-  log.header("3/6  Installing npm dependencies");
+  log.header("3/5  Installing npm dependencies");
   installNpmDeps();
 
-  log.header("4/6  Verifying vendored Salesforce sf-skills");
+  log.header("4/5  Verifying vendored Salesforce sf-skills");
   verifySfSkills();
 
-  log.header("5/6  Setting up graphify");
-  setupGraphify();
-
-  log.header("6/6  TestDataFactory");
+  log.header("5/5  TestDataFactory");
   confirmTestDataFactory();
 
   log.header("═══ Setup complete! ═══");
@@ -397,7 +313,6 @@ async function main() {
   3. Authenticate orgs: sf org login web --alias <alias>
   4. Add GitHub secrets: DEVHUB_AUTH_URL, STAGING_AUTH_URL, PRODUCTION_AUTH_URL
   5. Add GitHub environment protection for 'production' (manual approval)
-  6. Build full knowledge graph in Claude Code: /graphify .
 
   ${BOLD}sf-skills quick reference:${RESET}
   'Use the platform-apex-generate skill to create an AccountService for [requirement]'
@@ -419,7 +334,6 @@ module.exports = {
   installNpmDeps,
   verifySfSkills,
   CUSTOM_SKILLS,
-  setupGraphify,
   confirmTestDataFactory,
   _walkFiles
 };

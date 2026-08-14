@@ -3,6 +3,14 @@ name: agentforce-architecture-analyze
 description: "Declared architecture snapshot for one Agentforce agent: planner, topics, actions, flows, Apex, prompt templates, and NGA plugins. Renders a human-readable architecture document and Mermaid invocation graph from design-time metadata (not runtime audit rows). TRIGGER when user asks to describe, diagram, inventory, audit, document, or diff (e.g. v3 vs v5) the architecture / action tree / topic structure / tool inventory of a specific agent by agent API name in a specific org. DO NOT TRIGGER for runtime session traces, conversation transcripts, generation timings, or gateway audit chains — this skill reads design-time metadata only (use agentforce-d360-analyze for session traces)."
 metadata:
   version: "1.0"
+  minApiVersion: "64.0"
+  relatedSkills:
+    - "agentforce-d360-analyze"
+  cliTools:
+    - tool: ["sf"]
+      semver: ">=2.136.8"
+    - tool: ["python3"]
+      semver: ">=3.10.0"
 ---
 
 # agentforce-architecture-analyze — declared architecture snapshot
@@ -157,14 +165,14 @@ exit "$_rc"
 
 All artifacts under `~/.vibe/data/agentforce-architecture-analyze/<org_id15>/<agent_api_name>__<agent_version>/` (default; override with `--data-dir <path>`):
 
-```
+```xml
 <agent>_<ver>_metadata_tree.json   primary artifact — normalized planner/topic/action/flow/apex/prompt/plugin tree
 <agent>_<ver>_architecture.md      human-readable section-by-section rendering (H1 + 7 numbered sections, plus a conditional Dependency graph appendix). Mermaid diagrams are embedded inside the relevant sections (Action tree, Data flow, and Dependency graph)
 ```
 
 ## Pipeline — inline, no subagent
 
-```
+```text
 resolve_bot.py        → BotDefinition + BotVersion + planner name lookup
 retrieve_planner.py   → Metadata API zip retrieve for GenAiPlannerBundle (+ NGA plugins if present)
 parallel_retrieve.py  → 6 parallel Tooling SOQL channels fan out from the planner id

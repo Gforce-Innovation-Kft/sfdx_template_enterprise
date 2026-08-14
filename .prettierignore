@@ -9,9 +9,10 @@
 .vscode
 
 coverage/
-# Vendored third-party skills — never reformat (must stay byte-identical to upstream)
-.agents/
-.claude/skills/
 
-# Generated knowledge graph
-graphify-out/
+# AI layer — upstream artifacts, must stay byte-identical to their source.
+# Reformatting them forks the skill from canonical and invalidates skills-lock.json,
+# which permanently breaks `npx skills update` for this repo.
+# `.claude/` (not just `.claude/skills/`) — agents and references are upstream too.
+.agents/
+.claude/

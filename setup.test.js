@@ -12,7 +12,6 @@ const {
   installNpmDeps,
   verifySfSkills,
   CUSTOM_SKILLS,
-  setupGraphify,
   collectProjectInfo,
   parseCliArgs,
   _walkFiles
@@ -195,13 +194,11 @@ describe("_walkFiles", () => {
     writeFile(tmp, "ok/valid.md", "");
     writeFile(tmp, "node_modules/pkg/index.js", "");
     writeFile(tmp, "libs/fflib/src/Foo.cls", "");
-    writeFile(tmp, "graphify-out/graph.json", "");
 
     const files = _walkFiles(tmp).map((f) => f.replace(tmp, ""));
     expect(files.some((f) => f.includes("valid.md"))).toBe(true);
     expect(files.some((f) => f.includes("node_modules"))).toBe(false);
     expect(files.some((f) => f.includes("libs"))).toBe(false);
-    expect(files.some((f) => f.includes("graphify-out"))).toBe(false);
   });
 });
 
@@ -306,85 +303,13 @@ describe("verifySfSkills", () => {
 
   it("throws when a GForce custom skill is missing", () => {
     seedLock(["platform-apex-generate"]);
-    seedSkills(["platform-apex-generate", "graphify", "new-requirement"]);
+    seedSkills(["platform-apex-generate", "new-requirement"]);
     expect(() => verifySfSkills({ root: tmp })).toThrow(/salesforce-developer/);
   });
 
   it("throws when skills-lock.json is missing", () => {
     seedSkills(CUSTOM_SKILLS);
     expect(() => verifySfSkills({ root: tmp })).toThrow(/skills-lock\.json/);
-  });
-});
-
-// ── setupGraphify ─────────────────────────────────────────────────────────────
-
-describe("setupGraphify", () => {
-  it("runs install + hook + update when graphify is already installed and graph exists", () => {
-    const tmp = makeTmpDir();
-    try {
-      writeFile(tmp, "graphify-out/graph.json", "{}");
-      const exec = jest.fn();
-      setupGraphify({
-        hasCommand: (cmd) => cmd === "graphify",
-        execSync: exec,
-        root: tmp
-      });
-      const calls = exec.mock.calls.map(([cmd]) => cmd);
-      expect(calls.some((c) => c.includes("graphify install"))).toBe(true);
-      expect(calls.some((c) => c.includes("graphify hook install"))).toBe(true);
-      expect(calls.some((c) => c.includes("graphify update"))).toBe(true);
-    } finally {
-      rimraf(tmp);
-    }
-  });
-
-  it("runs graphify build when installed but no graph.json yet", () => {
-    const tmp = makeTmpDir();
-    try {
-      const exec = jest.fn();
-      setupGraphify({
-        hasCommand: (cmd) => cmd === "graphify",
-        execSync: exec,
-        root: tmp
-      });
-      const calls = exec.mock.calls.map(([cmd]) => cmd.trim());
-      expect(calls).toContain("graphify .");
-    } finally {
-      rimraf(tmp);
-    }
-  });
-
-  it("tries uv install when graphify missing but uv present", () => {
-    const tmp = makeTmpDir();
-    try {
-      const exec = jest.fn();
-      setupGraphify({
-        hasCommand: (cmd) => cmd === "uv",
-        execSync: exec,
-        root: tmp
-      });
-      expect(exec).toHaveBeenCalledWith(
-        expect.stringContaining("uv tool install"),
-        expect.anything()
-      );
-    } finally {
-      rimraf(tmp);
-    }
-  });
-
-  it("does not throw when no graphify, uv, or pipx found", () => {
-    const tmp = makeTmpDir();
-    try {
-      expect(() =>
-        setupGraphify({
-          hasCommand: () => false,
-          execSync: jest.fn(),
-          root: tmp
-        })
-      ).not.toThrow();
-    } finally {
-      rimraf(tmp);
-    }
   });
 });
 
