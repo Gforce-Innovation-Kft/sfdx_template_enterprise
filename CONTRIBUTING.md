@@ -1,7 +1,7 @@
 # Contributing
 
 This applies both to the template itself and to projects bootstrapped from it.
-Full details live in `.claude/references/deployment-devops.md`.
+Full details live in `.claude/skills/salesforce-developer/references/deployment-devops.md`.
 
 ## Branch model (trunk-based)
 
@@ -51,7 +51,7 @@ quick-deploy lookup).
 ## Hard rules for code
 
 See `CLAUDE.md` — the same constraints bind humans and AI: no SOQL/DML in
-loops, all SOQL through Selectors with `WITH SECURITY_ENFORCED`, all DML
+loops, all SOQL through Selectors in user mode (`WITH USER_MODE`), all DML
 through Unit of Work, `with sharing` by default, one-line triggers,
 NebulaLogger only, TestDataFactory-based tests.
 

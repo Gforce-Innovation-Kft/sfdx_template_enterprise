@@ -8,17 +8,24 @@ These instructions apply to all AI coding assistants (GitHub Copilot, Cursor, Wi
 
 Follow this three-step workflow every time:
 
+The rules live in the **`salesforce-developer` skill**, vendored at
+`.claude/skills/salesforce-developer/`. Claude Code loads it automatically; assistants
+that do not support skills should read the files below directly.
+
 1. **Read the relevant coding rules**
-   - Apex: `.claude/references/apex-coding-rules.md`
-   - LWC: `.claude/references/lwc-coding-rules.md`
+   - Apex: `.claude/skills/salesforce-developer/references/apex-coding-rules.md`
+   - LWC: `.claude/skills/salesforce-developer/references/lwc-coding-rules.md`
 
 2. **Read the relevant patterns**
-   - fflib layers: `.claude/references/apex-patterns.md`
-   - Security & sharing: `.claude/references/security-sharing.md`
-   - SOQL queries: `.claude/references/soql-optimization.md`
-   - CI/CD & deployment: `.claude/references/deployment-devops.md`
+   - fflib layers: `.claude/skills/salesforce-developer/references/apex-patterns.md`
+   - Security & sharing: `.claude/skills/salesforce-developer/references/security-sharing.md`
+   - SOQL queries: `.claude/skills/salesforce-developer/references/soql-optimization.md`
+   - CI/CD & deployment: `.claude/skills/salesforce-developer/references/deployment-devops.md`
 
-3. **Read the business context**
+3. **Read `.claude/references/local-standards.md` last** — this repo's overrides win
+   over anything above.
+
+4. **Read the business context**
    - `docs/product/PRODUCT.md` — what the system does and why
    - `docs/product/requirements/REQ-*.yaml` — specific requirements for this feature
 

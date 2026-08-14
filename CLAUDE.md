@@ -15,9 +15,11 @@ All layers use fflib enterprise patterns. NebulaLogger for all logging. Never `S
 
 1. Read `docs/product/PRODUCT.md` — what the system does and why
 2. Read the relevant `docs/product/requirements/REQ-*.yaml`
-3. For Apex: use the `platform-apex-generate` sf-skill + read `.claude/references/apex-coding-rules.md`
-4. For LWC: use the `experience-lwc-generate` sf-skill + read `.claude/references/lwc-coding-rules.md`
-5. For tests: use the `platform-apex-test-generate` sf-skill + read `.claude/references/apex-patterns.md` + read `.claude/references/testing-testdatafactory.md`
+3. Invoke the **`salesforce-developer` skill**. It is the router — it decides which rule
+   file applies (Apex, LWC, tests, security, SOQL, deployment) and reads it for you.
+   Do not go looking for reference files yourself.
+4. Then generate with the matching sf-skill: `platform-apex-generate`,
+   `experience-lwc-generate`, or `platform-apex-test-generate`.
 
 ## AI layer
 
@@ -35,24 +37,24 @@ All layers use fflib enterprise patterns. NebulaLogger for all logging. Never `S
 `platform-apex-generate`, `platform-apex-test-generate`, `experience-lwc-generate`,
 `platform-apex-test-run`, `platform-metadata-deploy`, `dx-code-analyzer-run`, and 80+ more.
 
-## GForce Reference Files (`.claude/references/`)
+## Where the coding rules live
 
-Read the relevant file before generating code — do NOT skip this step:
+**In the `salesforce-developer` skill, not in this repo.** The skill ships its own
+`references/` (Apex, LWC, patterns, tests, security, SOQL, deployment) and routes to
+the right one. This repo used to keep parallel copies in `.claude/references/`; they
+drifted and were deleted — a duplicated rule file is a rule file that goes stale.
 
-| File                         | When to read                                                         |
-| ---------------------------- | -------------------------------------------------------------------- |
-| `apex-coding-rules.md`       | Any Apex generation — bulk safety, NebulaLogger, fflib, security     |
-| `lwc-coding-rules.md`        | Any LWC generation — wire, 4-state template, SLDS, FLS               |
-| `apex-patterns.md`           | fflib Application factory, domain/selector/service/UoW patterns      |
-| `testing-testdatafactory.md` | TestDataFactory API, project factory wrappers, standard test pattern |
-| `security-sharing.md`        | CRUD/FLS, WITH SECURITY_ENFORCED, Named Credentials                  |
-| `soql-optimization.md`       | Selector SOQL, bind vars, index fields                               |
-| `deployment-devops.md`       | Branching, scratch orgs, CI gates, promotion                         |
+`.claude/references/` now holds exactly one file: **`local-standards.md`** (L3). The
+skill reads it **last** and it **wins** on conflict. That is the only supported way to
+specialize the standard here. Editing the skill in this repo is not — it breaks
+`npx skills update` permanently.
 
 ## Hard constraints
 
 - No SOQL or DML in loops — ever
-- All SOQL through Selectors with `WITH SECURITY_ENFORCED`
+- All SOQL through Selectors, in **user mode** (`WITH USER_MODE`) — it enforces CRUD,
+  FLS _and_ sharing. `WITH SECURITY_ENFORCED` is not equivalent and is flagged in new
+  code by `sf-code-reviewer`; see the skill's `references/security-sharing.md`
 - All DML through Unit of Work
 - `with sharing` on all classes unless explicitly justified
 - Triggers: zero logic — one line to handler
@@ -75,6 +77,6 @@ Plus 2 from **Gforce-Innovation-Kft/gforce-ai**: `salesforce-developer`, `gforce
 - `new-requirement`
 - `using-nebula-logger`
 
-**Global tooling available in every session:** lean-ctx (prefer `ctx_*` MCP tools for reads/search/shell — token-compressed) and superpowers process skills.
+**Global tooling available in every session:** rtk (Bash output compression — automatic via hook), lean-ctx (prefer `ctx_*` MCP tools for reads/search — token-compressed), and superpowers process skills.
 
 <!-- /skills-tooling -->
