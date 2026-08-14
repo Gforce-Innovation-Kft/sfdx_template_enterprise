@@ -104,20 +104,6 @@ When generating an LWC component, verify:
 
 ---
 
-## Code Navigation
-
-When `graphify-out/graph.json` exists, prefer:
-
-```
-graphify query "how does account update work?"
-graphify path "AccountService" "AccountSelector"
-graphify explain "Application"
-```
-
-Over opening individual files. The graph is much smaller context than raw file reads.
-
----
-
 ## Skills Available
 
 ```
