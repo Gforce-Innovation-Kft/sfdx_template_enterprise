@@ -1,5 +1,7 @@
 # GForce SF Enterprise Template
 
+> **GForce catalog:** Platform · status: `active` — **Owns:** the "Use this template" SFDX scaffold for client projects. **Not:** demo apps (→ sf-develop-demo).
+
 > **This is a template repository.** Click **Use this template** on GitHub (or clone it),
 > run one setup command, and you have a production-grade Salesforce DX project with
 > enterprise patterns, CI/CD, and AI pair-programming pre-wired.
