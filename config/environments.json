@@ -1,0 +1,14 @@
+{
+  "environments": [
+    {
+      "alias": "dev-scratch",
+      "kind": "scratch",
+      "agentWrite": true
+    },
+    {
+      "alias": "gabor_dev",
+      "kind": "devhub",
+      "agentWrite": false
+    }
+  ]
+}
