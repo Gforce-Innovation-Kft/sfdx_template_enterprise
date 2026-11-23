@@ -283,12 +283,6 @@
       "skillPath": "skills/external-diagram-visual-generate/SKILL.md",
       "computedHash": "4599e273a9f704592872fd7f6fa1e823520b1a2bf571edb9f968db7e2bcc40a6"
     },
-    "gforce-github-actions": {
-      "source": "Gforce-Innovation-Kft/gforce-ai",
-      "sourceType": "github",
-      "skillPath": "skills/gforce-github-actions/SKILL.md",
-      "computedHash": "ae7dfd1e8fcb6393c932b682b6d8dad9e392bbc364d70a8aaa39920fa09a94f5"
-    },
     "integration-connectivity-connected-app-configure": {
       "source": "forcedotcom/sf-skills",
       "sourceType": "github",
